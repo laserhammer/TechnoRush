@@ -1,0 +1,12 @@
+﻿Build started 10/21/2014 2:58:46 PM.
+     1>Project "J:\DX\TechnoRush\TechnoRush\TechnoRush\TechnoRush.vcxproj" on node 2 (Build target(s)).
+     1>Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"J:\DX\TechnoRush\TechnoRush\Debug\TechnoRush.exe" /INCREMENTAL /NOLOGO d3d11.lib d3dcompiler.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"J:\DX\TechnoRush\TechnoRush\Debug\TechnoRush.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"J:\DX\TechnoRush\TechnoRush\Debug\TechnoRush.lib" /MACHINE:X86 Debug\DirectXGame.obj
+         Debug\dxerr.obj
+         Debug\GameTimer.obj
+     1>LINK : fatal error LNK1561: entry point must be defined
+     1>Done Building Project "J:\DX\TechnoRush\TechnoRush\TechnoRush\TechnoRush.vcxproj" (Build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:00.81
