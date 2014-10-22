@@ -1,11 +1,14 @@
 #include "Singleton.h"
 
+bool Singleton::exists = false;
+Singleton* Singleton::single = nullptr;
 
-Singleton::Singleton()
+Singleton* Singleton::getInstance()
 {
-}
-
-
-Singleton::~Singleton()
-{
+	if(!exists)
+	{
+		single = new Singleton();
+		exists = true;
+	}
+	return single;
 }
