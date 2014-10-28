@@ -24,7 +24,7 @@ void Mesh::GenerateBuffers(Vertex *vertices, UINT verticies_Length, UINT *indice
 	// Create the vertex buffer
 	D3D11_BUFFER_DESC vbd;
 	vbd.Usage = D3D11_USAGE_IMMUTABLE;
-	vbd.ByteWidth = sizeof(Vertex) * verticies_Length; 
+	vbd.ByteWidth = sizeof(Vertex) * verticies_Length;
 	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vbd.CPUAccessFlags = 0;
 	vbd.MiscFlags = 0;

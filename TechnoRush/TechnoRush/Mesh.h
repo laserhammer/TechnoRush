@@ -1,4 +1,5 @@
 #pragma once
+#pragma once
 
 #include <DirectXMath.h>
 #include "DirectXGame.h"
@@ -39,3 +40,4 @@ private:
 	UINT num_indicies;
 
 };
+

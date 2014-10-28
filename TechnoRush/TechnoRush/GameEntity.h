@@ -17,16 +17,16 @@ struct VSConstantBufferLayout;
 class GameEntity
 {
 public:
-	GameEntity(	Vertex *vertices,				UINT verticies_Length,			
-				UINT *indices,					UINT indicies_Length,			
-				ID3D11Device *device,			ID3D11Buffer *vsConstantBuffer,	
-				VSConstantBufferLayout *constantBufferLayout, 
-				Material *material);
+	GameEntity(Vertex *vertices, UINT verticies_Length,
+		UINT *indices, UINT indicies_Length,
+		ID3D11Device *device,
+		VSConstantBufferLayout *constantBufferLayout,
+		Material *material);
 	~GameEntity();
 
 	XMFLOAT4X4* World();
 
-	
+
 	void Update(float dt);
 	void Draw(ID3D11DeviceContext* deviceContext);
 
@@ -42,8 +42,8 @@ private:
 	XMFLOAT4 rotation;
 	XMFLOAT4 scale;
 	float velocity[2];
-	ID3D11Buffer* vsConstantBuffer;
 	VSConstantBufferLayout *constantBufferLayout;
 
 	Material* material;
 };
+

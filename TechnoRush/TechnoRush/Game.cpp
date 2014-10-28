@@ -1,28 +1,31 @@
+
+
 #include <Windows.h>
 #include <d3dcompiler.h>
 #include <ctime>
 #include <iostream>
 #include "Game.h"
 #include "GameEntity.h"
+#include "Camera.h"
 #include "WICTextureLoader.h"
 
 #pragma region Win32 Entry Point (WinMain)
 
 // Win32 Entry Point
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
-				   PSTR cmdLine, int showCmd)
+	PSTR cmdLine, int showCmd)
 {
 	// Enable run-time memory check for debug builds.
 #if defined(DEBUG) | defined(_DEBUG)
-	_CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
 	// Make the game, initialize and run
 	Game game(hInstance);
-	
-	if( !game.Init() )
+
+	if (!game.Init())
 		return 0;
-	
+
 	return game.Run();
 }
 
@@ -33,7 +36,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 Game::Game(HINSTANCE hInstance) : DirectXGame(hInstance)
 {
 	// Set up our custom caption and window size
-	windowCaption = L"TechnoRush";
+	windowCaption = L"Demo DX11 Game";
 	windowWidth = 800;
 	windowHeight = 600;
 }
@@ -45,6 +48,9 @@ Game::~Game()
 	ReleaseMacro(pixelShader);
 	ReleaseMacro(vsConstantBuffer);
 	ReleaseMacro(inputLayout);
+	ReleaseMacro(textureView);
+	ReleaseMacro(samplerState);
+	delete(camera);
 	delete(material);
 	while (entities.size() > 0)
 	{
@@ -62,21 +68,15 @@ Game::~Game()
 // sets up our geometry and loads the shaders (among other things)
 bool Game::Init()
 {
-	if( !DirectXGame::Init() )
+	camera = new Camera();
+
+	if (!DirectXGame::Init())
 		return false;
 
 	// Set up buffers and such
 	LoadShadersAndInputLayout();
 	CreateGeometryBuffers();
-
-	// Set up view matrix (camera)
-	// In an actual game, update this when the camera moves (every frame)
-	XMVECTOR position	= XMVectorSet(0, 0, -5, 0);
-	XMVECTOR target		= XMVectorSet(0, 0, 0, 0);
-	XMVECTOR up			= XMVectorSet(0, 1, 0, 0);
-	XMMATRIX V			= XMMatrixLookAtLH(position, target, up);
-	XMStoreFloat4x4(&viewMatrix, XMMatrixTranspose(V));
-
+	
 	return true;
 }
 
@@ -84,7 +84,6 @@ bool Game::Init()
 // Creates the vertex and index buffers for a single triangle
 void Game::CreateGeometryBuffers()
 {
-	/*
 	Vertex vertices[3];
 	Vertex verticesGreen[4];
 
@@ -93,9 +92,9 @@ void Game::CreateGeometryBuffers()
 
 	entities = std::vector <GameEntity*>();
 
-	XMFLOAT4 red	= XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-	XMFLOAT4 green	= XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
-	XMFLOAT4 blue	= XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
+	XMFLOAT4 red = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+	XMFLOAT4 green = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+	XMFLOAT4 blue = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 	XMFLOAT4 white = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 
 	D3D11_SAMPLER_DESC desc;
@@ -114,11 +113,11 @@ void Game::CreateGeometryBuffers()
 	desc.MipLODBias = 0;
 
 	device->CreateSamplerState(&desc, &samplerState);
-	
+
 	HRESULT result = CreateWICTextureFromFile(device, deviceContext, L"../Textures/Test_card.png", 0, &textureView);
 	std::cout << result;
-	
-	material = new Material(textureView, samplerState);
+
+	material = new Material(textureView, samplerState, vertexShader, vsConstantBuffer, pixelShader, inputLayout);
 
 	std::srand(time(0));
 
@@ -129,7 +128,7 @@ void Game::CreateGeometryBuffers()
 
 	// Set up the indices
 	UINT indices[] = { 0, 2, 1 };
-	entities.push_back(new GameEntity(vertices, 3, indices, 3, device, vsConstantBuffer, &dataToSendToVSConstantBuffer, material));
+	entities.push_back(new GameEntity(vertices, 3, indices, 3, device, &dataToSendToVSConstantBuffer, material));
 
 	//// Do the same thing but now for green triangles
 	verticesGreen[0] = { XMFLOAT3(-0.5f, +0.5f, +0.0f), white, XMFLOAT2(0.0f, 0.0f) };
@@ -137,8 +136,7 @@ void Game::CreateGeometryBuffers()
 	verticesGreen[2] = { XMFLOAT3(+0.5f, -0.5f, +0.0f), white, XMFLOAT2(1.0f, 1.0f) };
 	verticesGreen[3] = { XMFLOAT3(-0.5f, -0.5f, +0.0f), white, XMFLOAT2(0.0f, 1.0f) };
 	UINT indiciesGreen[] = { 0, 1, 2, 0, 2, 3 };
-	entities.push_back(new GameEntity(verticesGreen, 4, indiciesGreen, 6, device, vsConstantBuffer, &dataToSendToVSConstantBuffer, material));
-	*/
+	entities.push_back(new GameEntity(verticesGreen, 4, indiciesGreen, 6, device, &dataToSendToVSConstantBuffer, material));
 }
 
 // Loads shaders from compiled shader object (.cso) files, and uses the
@@ -146,17 +144,6 @@ void Game::CreateGeometryBuffers()
 // vertex data to the device
 void Game::LoadShadersAndInputLayout()
 {
-	/*
-	// Set up the vertex layout description
-	// This has to match the vertex input layout in the vertex shader
-	// We can't set up the input layout yet since we need the actual vert shader
-	D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
-	{
-		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,	0, 0,	D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12,	D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,		0, 28,	D3D11_INPUT_PER_VERTEX_DATA, 0}
-	};
-
 	// Load Vertex Shader --------------------------------------
 	ID3DBlob* vsBlob;
 	D3DReadFileToBlob(L"VertexShader.cso", &vsBlob);
@@ -168,13 +155,7 @@ void Game::LoadShadersAndInputLayout()
 		NULL,
 		&vertexShader));
 
-	// Before cleaning up the data, create the input layout
-	HR(device->CreateInputLayout(
-		vertexDesc,
-		ARRAYSIZE(vertexDesc),
-		vsBlob->GetBufferPointer(),
-		vsBlob->GetBufferSize(),
-		&inputLayout));
+	CreateInputLayoutDescFromVertexShaderSignature(vsBlob, &inputLayout);
 
 	// Clean up
 	ReleaseMacro(vsBlob);
@@ -195,17 +176,80 @@ void Game::LoadShadersAndInputLayout()
 
 	// Constant buffers ----------------------------------------
 	D3D11_BUFFER_DESC cBufferDesc;
-	cBufferDesc.ByteWidth           = sizeof(dataToSendToVSConstantBuffer);
-	cBufferDesc.Usage				= D3D11_USAGE_DEFAULT;
-	cBufferDesc.BindFlags			= D3D11_BIND_CONSTANT_BUFFER;
-	cBufferDesc.CPUAccessFlags		= 0;
-	cBufferDesc.MiscFlags			= 0;
+	cBufferDesc.ByteWidth = sizeof(dataToSendToVSConstantBuffer);
+	cBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	cBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cBufferDesc.CPUAccessFlags = 0;
+	cBufferDesc.MiscFlags = 0;
 	cBufferDesc.StructureByteStride = 0;
 	HR(device->CreateBuffer(
 		&cBufferDesc,
 		NULL,
 		&vsConstantBuffer));
-		*/
+}
+
+// From http://takinginitiative.wordpress.com/2011/12/11/directx-1011-basic-shader-reflection-automatic-input-layout-creation/
+void Game::CreateInputLayoutDescFromVertexShaderSignature(ID3DBlob* shaderBlob, ID3D11InputLayout** inputLayout)
+{
+	// Reflect shader info
+	ID3D11ShaderReflection* vertexShaderReflection = NULL;
+	HR(D3DReflect(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&vertexShaderReflection));
+
+	// Get shader info
+	D3D11_SHADER_DESC shaderDesc;
+	vertexShaderReflection->GetDesc(&shaderDesc);
+
+	// Read input layout description from shader info
+	std::vector<D3D11_INPUT_ELEMENT_DESC> inputLayoutDesc;
+	for (UINT32 i = 0; i < shaderDesc.InputParameters; ++i)
+	{
+		D3D11_SIGNATURE_PARAMETER_DESC paramDesc;
+		vertexShaderReflection->GetInputParameterDesc(i, &paramDesc);
+
+		// fill out input element desc
+		D3D11_INPUT_ELEMENT_DESC elementDesc;
+		elementDesc.SemanticName = paramDesc.SemanticName;
+		elementDesc.SemanticIndex = paramDesc.SemanticIndex;
+		elementDesc.InputSlot = 0;
+		elementDesc.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+		elementDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+		elementDesc.InstanceDataStepRate = 0;
+
+		// determine DXGI format
+		if (paramDesc.Mask == 1)
+		{
+			if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_UINT32) elementDesc.Format = DXGI_FORMAT_R32_UINT; 
+			else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_SINT32) elementDesc.Format = DXGI_FORMAT_R32_SINT;
+			else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_FLOAT32) elementDesc.Format = DXGI_FORMAT_R32_FLOAT;
+		}
+		else if (paramDesc.Mask <= 3)
+		{
+			if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_UINT32) elementDesc.Format = DXGI_FORMAT_R32G32_UINT;
+			else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_SINT32) elementDesc.Format = DXGI_FORMAT_R32G32_SINT;
+			else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_FLOAT32) elementDesc.Format = DXGI_FORMAT_R32G32_FLOAT;
+		}
+		else if (paramDesc.Mask <= 7)
+		{
+			if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_UINT32) elementDesc.Format = DXGI_FORMAT_R32G32B32_UINT;
+			else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_SINT32) elementDesc.Format = DXGI_FORMAT_R32G32B32_SINT;
+			else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_FLOAT32) elementDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+		}
+		else if (paramDesc.Mask <= 15)
+		{
+			if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_UINT32) elementDesc.Format = DXGI_FORMAT_R32G32B32A32_UINT;
+			else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_SINT32) elementDesc.Format = DXGI_FORMAT_R32G32B32A32_SINT;
+			else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_FLOAT32) elementDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		}
+
+		// save element desc
+		inputLayoutDesc.push_back(elementDesc);
+	}
+
+	// Try to create Input Layout
+	HR(device->CreateInputLayout(&inputLayoutDesc[0], inputLayoutDesc.size(), shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), inputLayout));
+
+	// Free allocation shader reflection memory
+	ReleaseMacro(vertexShaderReflection);
 }
 
 #pragma endregion
@@ -219,12 +263,16 @@ void Game::OnResize()
 	DirectXGame::OnResize();
 
 	// Update our projection matrix since the window size changed
+	
 	XMMATRIX P = XMMatrixPerspectiveFovLH(
 		0.5f * 3.1415926535f,
 		AspectRatio(),
 		0.1f,
 		100.0f);
 	XMStoreFloat4x4(&projectionMatrix, XMMatrixTranspose(P));
+	
+	//if (camera)
+	//	camera->Resize(AspectRatio());
 }
 #pragma endregion
 
@@ -234,7 +282,7 @@ void Game::OnResize()
 // push it to the buffer on the device
 void Game::UpdateScene(float dt)
 {
-	/*
+	camera->Update();
 	// Update entities
 	for each (GameEntity* entity in entities)
 	{
@@ -242,45 +290,42 @@ void Game::UpdateScene(float dt)
 	}
 
 	// Update local constant buffer data
-	dataToSendToVSConstantBuffer.view		= viewMatrix;
-	dataToSendToVSConstantBuffer.projection	= projectionMatrix;
-	*/
+	dataToSendToVSConstantBuffer.view = camera->view();//viewMatrix;
+	dataToSendToVSConstantBuffer.projection = projectionMatrix;
+
 }
 
 // Clear the screen, redraw everything, present
 void Game::DrawScene()
 {
-	/*
-	const float color[4] = {0.4f, 0.6f, 0.75f, 0.0f};
-
-	// Clear the buffer
-	deviceContext->ClearRenderTargetView(renderTargetView, color);
-	deviceContext->ClearDepthStencilView(
-		depthStencilView, 
-		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
-		1.0f,
-		0);
-
-	// Set up the input assembler
-	deviceContext->IASetInputLayout(inputLayout);
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	for each (GameEntity* entity in entities)
-	{
-		// Set the current vertex and pixel shaders, as well the constant buffer for the vert shader
-		deviceContext->VSSetShader(vertexShader, NULL, 0);
-		deviceContext->VSSetConstantBuffers(
-			0,	// Corresponds to the constant buffer's register in the vertex shader
-			1,
-			&vsConstantBuffer);
-		deviceContext->PSSetShader(pixelShader, NULL, 0);
-
-		entity->Draw(deviceContext);
-	}
-
+	
+	camera->RenderScene(&entities[0], entities.size(), renderTargetView, depthStencilView, deviceContext);
 	// Present the buffer
 	HR(swapChain->Present(0, 0));
-	*/
 }
 
+#pragma endregion
+
+#pragma region Mouse Input
+
+// These methods don't do much currently, but can be used for mouse-related input
+
+void Game::OnMouseDown(WPARAM btnState, int x, int y)
+{
+	prevMousePos.x = x;
+	prevMousePos.y = y;
+
+	SetCapture(hMainWnd);
+}
+
+void Game::OnMouseUp(WPARAM btnState, int x, int y)
+{
+	ReleaseCapture();
+}
+
+void Game::OnMouseMove(WPARAM btnState, int x, int y)
+{
+	prevMousePos.x = x;
+	prevMousePos.y = y;
+}
 #pragma endregion

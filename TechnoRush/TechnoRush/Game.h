@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <DirectXMath.h>
@@ -16,6 +15,7 @@ using namespace DirectX;
 
 class GameEntity;
 class Material;
+class Camera;
 
 // Struct to match vertex shader's constant buffer
 // You update one of these locally, then push it to the corresponding
@@ -26,13 +26,7 @@ struct VSConstantBufferLayout
 	XMFLOAT4X4 view;
 	XMFLOAT4X4 projection;
 };
-
-struct Vertex
-{
-	XMFLOAT3 Position;
-	XMFLOAT4 Color;
-	XMFLOAT2 UV;
-};
+struct PSConstantBufferLayout{};
 
 // Demo class which extends the base DirectXGame class
 class Game : public DirectXGame
@@ -45,17 +39,24 @@ public:
 	bool Init();
 	void OnResize();
 	void UpdateScene(float dt);
-	void DrawScene(); 
+	void DrawScene();
+
+	// For handing mouse input
+	void OnMouseDown(WPARAM btnState, int x, int y);
+	void OnMouseUp(WPARAM btnState, int x, int y);
+	void OnMouseMove(WPARAM btnState, int x, int y);
 
 private:
 	// Initialization for our "game" demo
 	void CreateGeometryBuffers();
 	void LoadShadersAndInputLayout();
 	void LoadTexture(const wchar_t* path);
-
+	void CreateInputLayoutDescFromVertexShaderSignature(ID3DBlob* shaderBlob, ID3D11InputLayout** inputLayout);
 private:
 
 	std::vector<GameEntity*> entities;
+
+	Camera* camera;
 
 	// Our basic shaders for this example
 	ID3D11PixelShader* pixelShader;
@@ -77,4 +78,7 @@ private:
 	XMFLOAT4X4 viewMatrix;
 	XMFLOAT4X4 projectionMatrix;
 
+	// Keeps track of the old mouse position.  Useful for 
+	// determining how far the mouse moved in a single frame.
+	POINT prevMousePos;
 };
