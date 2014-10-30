@@ -27,7 +27,7 @@ public:
 	XMFLOAT4X4* World();
 
 
-	void Update(float dt);
+	void Update(float dt, float xVel, float yVel);
 	void Draw(ID3D11DeviceContext* deviceContext);
 
 private:
