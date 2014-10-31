@@ -68,6 +68,8 @@ Game::~Game()
 // sets up our geometry and loads the shaders (among other things)
 bool Game::Init()
 {
+	xVel = 0;
+	yVel = 0;
 	camera = new Camera();
 
 	if (!DirectXGame::Init())
@@ -85,7 +87,7 @@ bool Game::Init()
 void Game::CreateGeometryBuffers()
 {
 	Vertex vertices[3];
-	Vertex verticesGreen[4];
+	Vertex verticesGreen[8];
 
 	textureView = nullptr;
 	samplerState = nullptr;
@@ -128,14 +130,18 @@ void Game::CreateGeometryBuffers()
 
 	// Set up the indices
 	UINT indices[] = { 0, 2, 1 };
-	entities.push_back(new GameEntity(vertices, 3, indices, 3, device, &dataToSendToVSConstantBuffer, material));
+	//entities.push_back(new GameEntity(vertices, 3, indices, 3, device, &dataToSendToVSConstantBuffer, material));
 
 	//// Do the same thing but now for green triangles
 	verticesGreen[0] = { XMFLOAT3(-0.5f, +0.5f, +0.0f), white, XMFLOAT2(0.0f, 0.0f) };
 	verticesGreen[1] = { XMFLOAT3(+0.5f, +0.5f, +0.0f), white, XMFLOAT2(1.0f, 0.0f) };
 	verticesGreen[2] = { XMFLOAT3(+0.5f, -0.5f, +0.0f), white, XMFLOAT2(1.0f, 1.0f) };
 	verticesGreen[3] = { XMFLOAT3(-0.5f, -0.5f, +0.0f), white, XMFLOAT2(0.0f, 1.0f) };
-	UINT indiciesGreen[] = { 0, 1, 2, 0, 2, 3 };
+	verticesGreen[4] = { XMFLOAT3(-0.5f, +0.5f, -0.5f), white, XMFLOAT2(0.0f, 0.0f) };
+	verticesGreen[5] = { XMFLOAT3(+0.5f, +0.5f, -0.5f), white, XMFLOAT2(1.0f, 0.0f) };
+	verticesGreen[6] = { XMFLOAT3(+0.5f, -0.5f, -0.5f), white, XMFLOAT2(1.0f, 1.0f) };
+	verticesGreen[7] = { XMFLOAT3(-0.5f, -0.5f, -0.5f), white, XMFLOAT2(0.0f, 1.0f) };
+	UINT indiciesGreen[] = { 0, 1, 2,   0, 2, 3,   0, 4, 2,   5, 2, 4,   1, 5, 6,   6, 2, 1,   2, 6, 7,   3, 2, 7,  3, 2, 7,  7, 7, 0,  0, 7, 4};
 	entities.push_back(new GameEntity(verticesGreen, 4, indiciesGreen, 6, device, &dataToSendToVSConstantBuffer, material));
 }
 
@@ -282,16 +288,30 @@ void Game::OnResize()
 // push it to the buffer on the device
 void Game::UpdateScene(float dt)
 {
+	//check to see what keys are being pressed
+	if (GetKeyState(0x44) & 0x80)
+	{
+		xVel = 2;
+	}
+
+	if (GetKeyState(0x41) & 0x80)
+	{
+		xVel = -2;
+	}
+
 	camera->Update();
 	// Update entities
 	for each (GameEntity* entity in entities)
 	{
-		entity->Update(dt);
+		entity->Update(dt, xVel, yVel);
 	}
 
 	// Update local constant buffer data
 	dataToSendToVSConstantBuffer.view = camera->view();//viewMatrix;
 	dataToSendToVSConstantBuffer.projection = projectionMatrix;
+
+	xVel = 0;
+	yVel = 0;
 
 }
 
@@ -302,6 +322,7 @@ void Game::DrawScene()
 	camera->RenderScene(&entities[0], entities.size(), renderTargetView, depthStencilView, deviceContext);
 	// Present the buffer
 	HR(swapChain->Present(0, 0));
+
 }
 
 #pragma endregion

@@ -46,6 +46,7 @@ public:
 	void OnMouseUp(WPARAM btnState, int x, int y);
 	void OnMouseMove(WPARAM btnState, int x, int y);
 
+
 private:
 	// Initialization for our "game" demo
 	void CreateGeometryBuffers();
@@ -81,4 +82,7 @@ private:
 	// Keeps track of the old mouse position.  Useful for 
 	// determining how far the mouse moved in a single frame.
 	POINT prevMousePos;
+
+	float xVel;
+	float yVel;
 };

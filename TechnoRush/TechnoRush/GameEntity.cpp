@@ -26,39 +26,20 @@ void GameEntity::init()
 	position = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 
 	// Velocity is a set rate in a random direction
-	float rate = 5.0f;
-	velocity[0] = (rand() % 100) / 100.0f;
-	velocity[1] = (rand() % 100) / 100.0f;
+	//float rate = 5.0f;
+	//velocity[0] = (rand() % 100) / 100.0f;
+	//velocity[1] = (rand() % 100) / 100.0f;
 	// Normalize the direction
-	float mag = velocity[0] * velocity[0] + velocity[1] * velocity[1];
-	mag = sqrtf(mag);
-	velocity[0] = velocity[0] / mag * rate;
-	velocity[1] = velocity[1] / mag * rate;
+	//float mag = velocity[0] * velocity[0] + velocity[1] * velocity[1];
+	//mag = sqrtf(mag);
+	//velocity[0] = velocity[0] / mag * rate;
+	//velocity[1] = velocity[1] / mag * rate;
 }
 
-void GameEntity::Update(float dt)
+void GameEntity::Update(float dt, float xVel, float yVel)
 {
-	float boundry = 3.0f;
-	if (position.x > boundry)
-	{
-		velocity[0] *= -1;
-		position.x = boundry;
-	}
-	else if (position.x < -boundry)
-	{
-		velocity[0] *= -1;
-		position.x = -boundry;
-	}
-	if (position.y > boundry)
-	{
-		velocity[1] *= -1;
-		position.y = boundry;
-	}
-	else if (position.y < -boundry)
-	{
-		velocity[1] *= -1;
-		position.y = -boundry;
-	}
+	velocity[0] = xVel;
+	velocity[1] = yVel;
 
 	// Load
 
