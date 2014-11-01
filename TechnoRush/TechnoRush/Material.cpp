@@ -1,5 +1,7 @@
+
 #include "Material.h"
 #include "WICTextureLoader.h"
+
 
 
 Material::Material(ID3D11ShaderResourceView* textureView, ID3D11SamplerState* samplerState,

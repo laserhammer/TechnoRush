@@ -1,6 +1,8 @@
 #pragma once
 
+
 #include <DirectXMath.h>
+
 #include "DirectXGame.h"
 #include "Mesh.h"
 #include "Material.h"
@@ -27,7 +29,7 @@ public:
 	XMFLOAT4X4* World();
 
 
-	void Update(float dt, float xVel, float yVel);
+	void Update(float dt);
 	void Draw(ID3D11DeviceContext* deviceContext);
 
 private:

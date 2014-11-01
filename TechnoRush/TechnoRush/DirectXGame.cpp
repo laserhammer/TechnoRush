@@ -11,6 +11,7 @@
 #include <WindowsX.h>
 #include <sstream>
 
+
 #pragma region Global Window Callback
 namespace
 {

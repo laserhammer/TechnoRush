@@ -1,7 +1,9 @@
+
 #include "GameEntity.h"
 #include "Mesh.h"
 #include "Game.h"
 #include "Material.h"
+
 
 
 GameEntity::GameEntity(Vertex *vertices, UINT verticies_Length, UINT *indices, UINT indicies_Length, ID3D11Device *device, VSConstantBufferLayout *constantBufferLayout, Material* material)
@@ -24,23 +26,10 @@ void GameEntity::init()
 	scale = XMFLOAT4(1.0f, 1.0f, 1.0f, 0.0f);
 	XMStoreFloat4(&rotation, XMQuaternionIdentity());
 	position = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
-
-	// Velocity is a set rate in a random direction
-	//float rate = 5.0f;
-	//velocity[0] = (rand() % 100) / 100.0f;
-	//velocity[1] = (rand() % 100) / 100.0f;
-	// Normalize the direction
-	//float mag = velocity[0] * velocity[0] + velocity[1] * velocity[1];
-	//mag = sqrtf(mag);
-	//velocity[0] = velocity[0] / mag * rate;
-	//velocity[1] = velocity[1] / mag * rate;
 }
 
-void GameEntity::Update(float dt, float xVel, float yVel)
+void GameEntity::Update(float dt)
 {
-	velocity[0] = xVel;
-	velocity[1] = yVel;
-
 	// Load
 
 	XMVECTOR pos = XMLoadFloat4(&position);
@@ -50,13 +39,6 @@ void GameEntity::Update(float dt, float xVel, float yVel)
 	XMVECTOR scal = XMLoadFloat4(&scale);
 
 	// Change
-
-	// Change position according to velocity
-	//XMMATRIX translation = XMMatrixTranslation(velocity[0] * dt + position.x, velocity[1] * dt + position.y, 0);
-
-
-	XMMATRIX translation = XMMatrixTranslation(velocity[0] * dt, velocity[1] * dt, 0);
-	pos = XMVector4Transform(pos, translation);
 
 	// Update world matrix
 	XMMATRIX worldMatrix = XMMatrixTranspose(XMMatrixTransformation(pos, rot, scal, pos, rot, pos));
@@ -93,7 +75,6 @@ void GameEntity::Draw(ID3D11DeviceContext* deviceContext)
 	deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	// Set material resources
-	//ID3D11ShaderResourceView* const *textureView = material->textureView();
 	ID3D11ShaderResourceView* textureView = material->textureView();
 	ID3D11SamplerState* samplerState = material->samplerState();
 	deviceContext->PSSetShaderResources(0, 1, &textureView);

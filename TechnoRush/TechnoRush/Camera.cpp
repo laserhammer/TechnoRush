@@ -1,5 +1,7 @@
+
 #include "Camera.h"
 #include "GameEntity.h"
+
 
 using namespace DirectX;
 Camera::Camera(void)
@@ -11,12 +13,17 @@ Camera::Camera(void)
 	_width = 800;
 	_height = 600;
 
-	_orthographic = true;
+	_orthographic = false;
 
 	_clearColor[0] = 0.4f;
 	_clearColor[1] = 0.6f;
 	_clearColor[2] = 0.75f;
 	_clearColor[3] = 0.0f;
+
+	_position = XMFLOAT4(0, 0, -5, 0);
+	_lookAt = XMFLOAT4(0, 0, 0, 0);
+	_up = XMFLOAT4(0, 1, 0, 0);
+	Update();
 }
 
 
@@ -26,10 +33,11 @@ Camera::~Camera(void)
 
 void Camera::Update()
 {
-	XMVECTOR position = XMVectorSet(0, 0, -5, 0);
-	XMVECTOR target = XMVectorSet(0, 0, 0, 0);
-	XMVECTOR up = XMVectorSet(0, 1, 0, 0);
+	XMVECTOR position = XMLoadFloat4(&_position);
+	XMVECTOR target = XMLoadFloat4(&_lookAt);
+	XMVECTOR up = XMLoadFloat4(&_up);
 	XMMATRIX V = XMMatrixLookAtLH(position, target, up);
+	
 	XMStoreFloat4x4(&_view, XMMatrixTranspose(V));
 }
 
@@ -62,6 +70,15 @@ void Camera::RenderScene(GameEntity** entities, int numEntities, ID3D11RenderTar
 		entities[i]->Draw(deviceContext);
 	}
 }
+
+void Camera::SetViewParameters(XMFLOAT3 position, XMFLOAT3 lookAt, XMFLOAT3 up)
+{
+	_position = XMFLOAT4(position.x, position.y, position.z, 0);
+	_lookAt = XMFLOAT4(lookAt.x, lookAt.y, lookAt.z, 0);
+	_up = XMFLOAT4(up.x, up.y, up.z, 0);
+	Update();
+}
+
 
 XMFLOAT4X4 Camera::view() { return _view; }
 XMFLOAT4X4 Camera::projection() { return _projection; }
