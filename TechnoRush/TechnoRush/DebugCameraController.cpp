@@ -25,60 +25,29 @@ bool DebugCameraController::_up, DebugCameraController::_down= false;
 void DebugCameraController::Update()
 {
 	// Listen for updates
-
-	if (InputManager::wKey)
-		_forward = true;
-	else
-		_forward = false;
-
-	if (InputManager::aKey)
-		_left = true;
-	else
-		_left = false;
-
-	if (InputManager::sKey)
-		_back = true;
-	else
-		_back = false;
-
-	if (InputManager::dKey)
-		_right = true;
-	else
-		_right = false;
+	_forward = InputManager::wKey;
+	_back = InputManager::sKey;
+	_left = InputManager::aKey;
+	_right = InputManager::dKey;
+	_up = InputManager::shiftKey;
+	_down = InputManager::ctrlKey;
 
 	XMFLOAT2 rotation = XMFLOAT2(0.0f, 0.0f);
-	if (InputManager::uArrowKey)
-		rotation.y -= 1.0f;
 
-	if (InputManager::dArrowKey)
-		rotation.y += 1.0f;
-
-	if (InputManager::lArrowKey)
-		rotation.x += 1.0f;
-
-	if (InputManager::rArrowKey)
-		rotation.x -= 1.0f;
+	rotation.y -= 1.0f * InputManager::uArrowKey;
+	rotation.y += 1.0f * InputManager::dArrowKey;
+	rotation.x += 1.0f * InputManager::lArrowKey;
+	rotation.x -= 1.0f * InputManager::rArrowKey;
 
 	OnPointerMoved(rotation);
 
 	// Poll state bits set by the keyboard event inputs
-	if (_forward)
-		_moveCommand.y -= 1.0f;
-
-	if (_back)
-		_moveCommand.y += 1.0f;
-
-	if (_left)
-		_moveCommand.x -= 1.0f;
-
-	if (_right)
-		_moveCommand.x += 1.0f;
-
-	if (_up)
-		_moveCommand.z += 1.0f;
-
-	if (_down)
-		_moveCommand.z -= 1.0f;
+	_moveCommand.y += 1.0f * _forward;
+	_moveCommand.y -= 1.0f * _back;
+	_moveCommand.x -= 1.0f * _right;
+	_moveCommand.x += 1.0f * _left;
+	_moveCommand.z += 1.0f * _up;
+	_moveCommand.z -= 1.0f * _down;
 
 	// Make sure that 45 degree cases are not faster
 	XMFLOAT3 command = _moveCommand;
@@ -92,7 +61,7 @@ void DebugCameraController::Update()
 	// Rotate command to align with our direction (world coordinates)
 	XMFLOAT3 wCommand = XMFLOAT3();
 	wCommand.x = command.x*cosf(_yaw) - command.y*sinf(_yaw);
-	wCommand.y = command.x*sinf(_yaw) - command.y*cosf(_yaw);
+	wCommand.y = command.x*sinf(_yaw) + command.y*cosf(_yaw);
 	wCommand.z = command.z;
 
 	// Scale for sensitivity adjustment

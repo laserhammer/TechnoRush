@@ -142,8 +142,8 @@ void Game::CreateGeometryBuffers()
 	cube[5] = { XMFLOAT3(+0.5f, +0.5f, -0.5f), white, XMFLOAT2(1.0f, 0.0f) };
 	cube[6] = { XMFLOAT3(+0.5f, -0.5f, -0.5f), white, XMFLOAT2(1.0f, 1.0f) };
 	cube[7] = { XMFLOAT3(-0.5f, -0.5f, -0.5f), white, XMFLOAT2(0.0f, 1.0f) };
-	UINT cubeIndicies[] = { 0, 1, 2,   0, 2, 3,   0, 4, 2,   5, 2, 4,   1, 5, 6,   6, 2, 1,   2, 6, 7,   3, 2, 7,  3, 2, 7,  7, 7, 0,  0, 7, 4};
-	entities.push_back(new GameEntity(cube, 4, cubeIndicies, 6, device, &dataToSendToVSConstantBuffer, material));
+	UINT cubeIndicies[] = { 2, 1, 0,   3, 2, 0,   1, 4, 0,   5, 4, 1,   6, 5, 1,   1, 2, 6,   7, 6, 2,   7, 2, 3,  0, 4, 7,  7, 3, 0,  4, 5, 6,  6, 7, 4};
+	entities.push_back(new GameEntity(cube, 8, cubeIndicies, 36, device, &dataToSendToVSConstantBuffer, material));
 }
 
 // Loads shaders from compiled shader object (.cso) files, and uses the

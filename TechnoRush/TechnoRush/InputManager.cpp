@@ -8,6 +8,8 @@ bool InputManager::wKey = false;
 bool InputManager::aKey = false;
 bool InputManager::sKey = false;
 bool InputManager::dKey = false;
+bool InputManager::shiftKey = false;
+bool InputManager::ctrlKey = false;
 bool InputManager::rArrowKey = false;
 bool InputManager::lArrowKey = false;
 bool InputManager::uArrowKey = false;
@@ -49,51 +51,14 @@ void InputManager::Update()
 {
 	//Check ALL the key states
 
-	// W key
-	if (GetKeyState(0x57) & 0x80)
-		wKey = true;
-	else
-		wKey = false;
-
-	// A key
-	if (GetKeyState(0x44) & 0x80)
-		aKey = true;
-	else
-		aKey = false;
-
-	// S key
-	if (GetKeyState(0x53) & 0x80)
-		sKey = true;
-	else
-		sKey = false;
-
-	// D key
-	if (GetKeyState(0x41) & 0x80)
-		dKey = true;
-	else
-		dKey = false;
-
-	// Right arrow key
-	if (GetKeyState(0x27) & 0x80)
-		rArrowKey = true;
-	else
-		rArrowKey = false;
-
-	// Left arrow key
-	if (GetKeyState(0x25) & 0x80)
-		lArrowKey = true;
-	else
-		lArrowKey = false;
-
-	// Up arrow key
-	if (GetKeyState(0x26) & 0x80)
-		uArrowKey = true;
-	else
-		uArrowKey = false;
-
-	// Down arrow key
-	if (GetKeyState(0x28) & 0x80)
-		dArrowKey = true;
-	else
-		dArrowKey = false;
+	wKey = GetKeyState(0x57) & 0x80;
+	aKey = GetKeyState(0x41) & 0x80;
+	sKey = GetKeyState(0x53) & 0x80;
+	dKey = GetKeyState(0x44) & 0x80;
+	shiftKey = GetKeyState(0x10) & 0x80;
+	ctrlKey = GetKeyState(0x11) & 0x80;
+	uArrowKey = GetKeyState(0x26) & 0x80;
+	dArrowKey = GetKeyState(0x28) & 0x80;
+	lArrowKey = GetKeyState(0x25) & 0x80;
+	rArrowKey = GetKeyState(0x27) & 0x80;
 }

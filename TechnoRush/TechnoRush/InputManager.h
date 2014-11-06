@@ -16,6 +16,8 @@ public:
 	static bool aKey;
 	static bool sKey;
 	static bool dKey;
+	static bool shiftKey;
+	static bool ctrlKey;
 	static bool rArrowKey;
 	static bool lArrowKey;
 	static bool uArrowKey;
