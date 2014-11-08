@@ -144,6 +144,9 @@ void Game::CreateGeometryBuffers()
 	cube[7] = { XMFLOAT3(-0.5f, -0.5f, -0.5f), white, XMFLOAT2(0.0f, 1.0f) };
 	UINT cubeIndicies[] = { 2, 1, 0,   3, 2, 0,   1, 4, 0,   5, 4, 1,   6, 5, 1,   1, 2, 6,   7, 6, 2,   7, 2, 3,  0, 4, 7,  7, 3, 0,  4, 5, 6,  6, 7, 4};
 	entities.push_back(new GameEntity(cube, 8, cubeIndicies, 36, device, &dataToSendToVSConstantBuffer, material));
+	entities.push_back(new GameEntity(cube, 8, cubeIndicies, 36, device, &dataToSendToVSConstantBuffer, material));
+	entities[1]->position(XMFLOAT4(2.0f, 0.0f, 0.0f, 0.0f));
+	entities[1]->layer(2);
 }
 
 // Loads shaders from compiled shader object (.cso) files, and uses the
@@ -280,7 +283,6 @@ void Game::OnResize()
 // push it to the buffer on the device
 void Game::UpdateScene(float dt)
 {
-	InputManager::Update();
 	gameManager->Update(dt);
 
 	// Update entities
@@ -298,7 +300,7 @@ void Game::UpdateScene(float dt)
 void Game::DrawScene()
 {
 	
-	gameManager->mainCamera()->RenderScene(&entities[0], entities.size(), renderTargetView, depthStencilView, deviceContext);
+	gameManager->RenderScene(&entities[0], entities.size(), renderTargetView, depthStencilView, deviceContext);
 	// Present the buffer
 	HR(swapChain->Present(0, 0));
 

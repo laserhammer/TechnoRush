@@ -23,6 +23,23 @@ public:
 	static bool uArrowKey;
 	static bool dArrowKey;
 	static bool mouseDown;
+	static bool returnKey;
+	static bool escKey;
+
+	// Prev input flags
+	static bool pwKey;
+	static bool paKey;
+	static bool psKey;
+	static bool pdKey;
+	static bool pshiftKey;
+	static bool pctrlKey;
+	static bool prArrowKey;
+	static bool plArrowKey;
+	static bool puArrowKey;
+	static bool pdArrowKey;
+	static bool pmouseDown;
+	static bool preturnKey;
+	static bool pescKey;
 
 	// Mouse Data
 	static DirectX::XMFLOAT2 prevMousePos;

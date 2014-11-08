@@ -16,6 +16,8 @@ public:
 
 	DirectX::XMFLOAT4X4 view();
 	DirectX::XMFLOAT4X4 projection();
+	unsigned int cullingMask();
+	void cullingMask(int newMask);
 
 private:
 	void Update();
@@ -32,7 +34,7 @@ private:
 	float _near, _far;
 	float _width, _height;
 	bool _orthographic;
-	
 
+	unsigned int _cullingMask;
 };
 

@@ -26,8 +26,11 @@ public:
 		Material *material);
 	~GameEntity();
 
-	XMFLOAT4X4* World();
-
+	//XMFLOAT4X4* World();
+	XMFLOAT4 position();
+	void position(XMFLOAT4 newPosition);
+	unsigned int layer();
+	void layer(int newLayer);
 
 	void Update(float dt);
 	void Draw(ID3D11DeviceContext* deviceContext);
@@ -38,14 +41,16 @@ private:
 private:
 
 	// Member variables
-	Mesh* mesh;
-	XMFLOAT4X4 world;
-	XMFLOAT4 position;
-	XMFLOAT4 rotation;
-	XMFLOAT4 scale;
-	float velocity[2];
-	VSConstantBufferLayout *constantBufferLayout;
+	Mesh* _mesh;
+	XMFLOAT4X4 _world;
+	XMFLOAT4 _position;
+	XMFLOAT4 _rotation;
+	XMFLOAT4 _scale;
+	//float velocity[2];
+	VSConstantBufferLayout *_constantBufferLayout;
 
-	Material* material;
+	Material* _material;
+
+	unsigned int _layer;
 };
 

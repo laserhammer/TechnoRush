@@ -15,6 +15,22 @@ bool InputManager::lArrowKey = false;
 bool InputManager::uArrowKey = false;
 bool InputManager::dArrowKey = false;
 bool InputManager::mouseDown = false;
+bool InputManager::returnKey = false;
+bool InputManager::escKey = false;
+
+bool InputManager::pwKey = false;
+bool InputManager::paKey = false;
+bool InputManager::psKey = false;
+bool InputManager::pdKey = false;
+bool InputManager::pshiftKey = false;
+bool InputManager::pctrlKey = false;
+bool InputManager::prArrowKey = false;
+bool InputManager::plArrowKey = false;
+bool InputManager::puArrowKey = false;
+bool InputManager::pdArrowKey = false;
+bool InputManager::pmouseDown = false;
+bool InputManager::preturnKey = false;
+bool InputManager::pescKey = false;
 
 // Mouse Data
 DirectX::XMFLOAT2 InputManager::prevMousePos = DirectX::XMFLOAT2(0.0f, 0.0f);
@@ -50,6 +66,18 @@ DirectX::XMFLOAT2 InputManager::getDeltaMousePos()
 void InputManager::Update()
 {
 	//Check ALL the key states
+	pwKey = wKey;
+	paKey = aKey;
+	psKey = sKey;
+	pdKey = dKey;
+	pshiftKey = shiftKey;
+	pctrlKey = ctrlKey;
+	puArrowKey = uArrowKey;
+	pdArrowKey = dArrowKey;
+	plArrowKey = lArrowKey;
+	prArrowKey = rArrowKey;
+	preturnKey = returnKey;
+	pescKey = escKey;
 
 	wKey = GetKeyState(0x57) & 0x80;
 	aKey = GetKeyState(0x41) & 0x80;
@@ -61,4 +89,7 @@ void InputManager::Update()
 	dArrowKey = GetKeyState(0x28) & 0x80;
 	lArrowKey = GetKeyState(0x25) & 0x80;
 	rArrowKey = GetKeyState(0x27) & 0x80;
+	returnKey = GetKeyState(0X0D) & 0X80;
+	escKey = GetKeyState(0x1B) & 0X80;
+
 }

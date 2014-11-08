@@ -23,6 +23,9 @@ Camera::Camera(void)
 	_position = XMFLOAT4(0, 0, -5, 0);
 	_lookAt = XMFLOAT4(0, 0, 0, 0);
 	_up = XMFLOAT4(0, 1, 0, 0);
+
+	_cullingMask = 1;
+
 	Update();
 }
 
@@ -67,7 +70,8 @@ void Camera::RenderScene(GameEntity** entities, int numEntities, ID3D11RenderTar
 
 	for(int i = 0; i < numEntities; ++i)
 	{
-		entities[i]->Draw(deviceContext);
+		if (_cullingMask & entities[i]->layer())	//Check the layer of the object against the cullling mask
+			entities[i]->Draw(deviceContext);
 	}
 }
 
@@ -82,3 +86,5 @@ void Camera::SetViewParameters(XMFLOAT3 position, XMFLOAT3 lookAt, XMFLOAT3 up)
 
 XMFLOAT4X4 Camera::view() { return _view; }
 XMFLOAT4X4 Camera::projection() { return _projection; }
+unsigned int Camera::cullingMask() { return _cullingMask; }
+void Camera::cullingMask(int newMask) { _cullingMask = newMask; }
