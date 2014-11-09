@@ -17,6 +17,7 @@ bool InputManager::dArrowKey = false;
 bool InputManager::mouseDown = false;
 bool InputManager::returnKey = false;
 bool InputManager::escKey = false;
+bool InputManager::pspaceKey = false;
 
 bool InputManager::pwKey = false;
 bool InputManager::paKey = false;
@@ -31,6 +32,7 @@ bool InputManager::pdArrowKey = false;
 bool InputManager::pmouseDown = false;
 bool InputManager::preturnKey = false;
 bool InputManager::pescKey = false;
+bool InputManager::spaceKey = false;
 
 // Mouse Data
 DirectX::XMFLOAT2 InputManager::prevMousePos = DirectX::XMFLOAT2(0.0f, 0.0f);
@@ -78,6 +80,7 @@ void InputManager::Update()
 	prArrowKey = rArrowKey;
 	preturnKey = returnKey;
 	pescKey = escKey;
+	pspaceKey = spaceKey;
 
 	wKey = GetKeyState(0x57) & 0x80;
 	aKey = GetKeyState(0x41) & 0x80;
@@ -91,5 +94,5 @@ void InputManager::Update()
 	rArrowKey = GetKeyState(0x27) & 0x80;
 	returnKey = GetKeyState(0X0D) & 0X80;
 	escKey = GetKeyState(0x1B) & 0X80;
-
+	spaceKey = GetKeyState(0x20) & 0x80;
 }

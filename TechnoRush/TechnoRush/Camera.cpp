@@ -26,6 +26,10 @@ Camera::Camera(void)
 
 	_cullingMask = 1;
 
+	_clearDepth = true;
+	_clearStencil = true;
+	_clearRenderTarget = true;
+
 	Update();
 }
 
@@ -58,13 +62,19 @@ void Camera::Resize(float aspectRatio)
 	XMStoreFloat4x4(&_projection, XMMatrixTranspose(P));
 }
 
-void Camera::RenderScene(GameEntity** entities, int numEntities, ID3D11RenderTargetView* renderTargetView, ID3D11DepthStencilView* depthStencilView, ID3D11DeviceContext* deviceContext)
+void Camera::RenderScene(GameEntity** entities, int numEntities, ID3D11RenderTargetView* renderTargetView, ID3D11DepthStencilView* depthStencilView, ID3D11DeviceContext* deviceContext, XMFLOAT4X4& viewData, XMFLOAT4X4& projectionData)
 {
+	viewData = _view;
+	projectionData = _projection;
+
 	// Clear the buffer
-	deviceContext->ClearRenderTargetView(renderTargetView, _clearColor);
+	if (_clearRenderTarget)
+		deviceContext->ClearRenderTargetView(renderTargetView, _clearColor);
+	unsigned int clearDepth = _clearDepth * D3D11_CLEAR_DEPTH;
+	unsigned int clearStencil = _clearStencil * D3D11_CLEAR_STENCIL;
 	deviceContext->ClearDepthStencilView(
 		depthStencilView,
-		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
+		clearDepth | clearStencil,
 		1.0f,
 		0);
 
@@ -88,3 +98,13 @@ XMFLOAT4X4 Camera::view() { return _view; }
 XMFLOAT4X4 Camera::projection() { return _projection; }
 unsigned int Camera::cullingMask() { return _cullingMask; }
 void Camera::cullingMask(int newMask) { _cullingMask = newMask; }
+XMFLOAT4 Camera::position() { return _position; }
+void Camera::position(DirectX::XMFLOAT4 newPosition) { _position = newPosition; }
+bool Camera::orthographic() { return _orthographic; }
+void Camera::orthographic(bool isOrthographic) { _orthographic = isOrthographic; }
+bool Camera::clearDepth() { return _clearDepth; }
+void Camera::clearDepth(bool isClearDepth) { _clearDepth = isClearDepth; }
+bool Camera::clearStencil() { return _clearStencil; }
+void Camera::clearStencil(bool isClearStencil) { _clearStencil = isClearStencil; }
+bool Camera::clearRenderTarget() { return _clearRenderTarget; }
+void Camera::clearRenderTarget(bool isClearRenderTarget) { _clearRenderTarget = isClearRenderTarget; }

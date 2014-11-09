@@ -25,6 +25,7 @@ public:
 	static bool mouseDown;
 	static bool returnKey;
 	static bool escKey;
+	static bool pspaceKey;
 
 	// Prev input flags
 	static bool pwKey;
@@ -40,6 +41,7 @@ public:
 	static bool pmouseDown;
 	static bool preturnKey;
 	static bool pescKey;
+	static bool spaceKey;
 
 	// Mouse Data
 	static DirectX::XMFLOAT2 prevMousePos;

@@ -273,7 +273,7 @@ void Game::OnResize()
 	DirectXGame::OnResize();
 
 	if (gameManager)
-		gameManager->mainCamera()->Resize(AspectRatio());
+		gameManager->Resize(AspectRatio());
 }
 #pragma endregion
 
@@ -292,15 +292,15 @@ void Game::UpdateScene(float dt)
 	}
 
 	// Update local constant buffer data
-	dataToSendToVSConstantBuffer.view = gameManager->mainCamera()->view();
-	dataToSendToVSConstantBuffer.projection = gameManager->mainCamera()->projection();
+	//dataToSendToVSConstantBuffer.view = gameManager->mainCamera()->view();
+	//dataToSendToVSConstantBuffer.projection = gameManager->mainCamera()->projection();
 }
 
 // Clear the screen, redraw everything, present
 void Game::DrawScene()
 {
 	
-	gameManager->RenderScene(&entities[0], entities.size(), renderTargetView, depthStencilView, deviceContext);
+	gameManager->RenderScene(&entities[0], entities.size(), renderTargetView, depthStencilView, deviceContext, dataToSendToVSConstantBuffer.view, dataToSendToVSConstantBuffer.projection);
 	// Present the buffer
 	HR(swapChain->Present(0, 0));
 
