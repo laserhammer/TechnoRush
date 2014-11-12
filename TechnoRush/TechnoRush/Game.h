@@ -15,8 +15,10 @@ using namespace DirectX;
 
 class GameEntity;
 class Material;
+class Mesh;
 class Camera;
 class GameManager;
+class WorldManager;
 
 // Struct to match vertex shader's constant buffer
 // You update one of these locally, then push it to the corresponding
@@ -85,4 +87,5 @@ private:
 	POINT prevMousePos;
 
 	GameManager* gameManager;
+	WorldManager* worldManager;
 };

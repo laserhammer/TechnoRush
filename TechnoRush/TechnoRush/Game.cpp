@@ -10,6 +10,8 @@
 #include "WICTextureLoader.h"
 #include "GameManager.h"
 #include "InputManager.h"
+#include "WorldManager.h"
+
 
 
 #pragma region Win32 Entry Point (WinMain)
@@ -72,7 +74,7 @@ Game::~Game()
 bool Game::Init()
 {
 	gameManager = new GameManager;
-	//camera = new Camera();
+	worldManager = new WorldManager();
 
 	if (!DirectXGame::Init())
 		return false;
@@ -121,17 +123,9 @@ void Game::CreateGeometryBuffers()
 	std::cout << result;
 
 	material = new Material(textureView, samplerState, vertexShader, vsConstantBuffer, pixelShader, inputLayout);
+	
 
 	std::srand((unsigned int)time(0));
-
-	// Set up the vertices
-	//vertices[0] = { XMFLOAT3(+0.0f, +1.0f, +0.0f), white, XMFLOAT2(0.5f, 0.0f) };
-	//vertices[1] = { XMFLOAT3(-0.5f, +0.0f, +0.0f), white, XMFLOAT2(0.0f, 1.0f) };
-	//vertices[2] = { XMFLOAT3(+0.5f, +0.0f, +0.0f), white, XMFLOAT2(1.f, 1.0f) };
-
-	// Set up the indices
-	//UINT indices[] = { 0, 2, 1 };
-	//entities.push_back(new GameEntity(vertices, 3, indices, 3, device, &dataToSendToVSConstantBuffer, material));
 
 	//// Do the same thing but now for green triangles
 	cube[0] = { XMFLOAT3(-0.5f, +0.5f, +0.0f), white, XMFLOAT2(0.0f, 0.0f) };
@@ -143,10 +137,22 @@ void Game::CreateGeometryBuffers()
 	cube[6] = { XMFLOAT3(+0.5f, -0.5f, -0.5f), white, XMFLOAT2(1.0f, 1.0f) };
 	cube[7] = { XMFLOAT3(-0.5f, -0.5f, -0.5f), white, XMFLOAT2(0.0f, 1.0f) };
 	UINT cubeIndicies[] = { 2, 1, 0,   3, 2, 0,   1, 4, 0,   5, 4, 1,   6, 5, 1,   1, 2, 6,   7, 6, 2,   7, 2, 3,  0, 4, 7,  7, 3, 0,  4, 5, 6,  6, 7, 4};
+	//entities.push_back(new GameEntity(cube, 8, cubeIndicies, 36, device, &dataToSendToVSConstantBuffer, material));
+	//entities.push_back(new GameEntity(cube, 8, cubeIndicies, 36, device, &dataToSendToVSConstantBuffer, material));
+	//entities[1]->position(XMFLOAT4(2.0f, 0.0f, 0.0f, 0.0f));
+	//entities[1]->layer(2);
+
+	for (int i = 0; i < 30; i++)
+	{
+		entities.push_back(new GameEntity(cube, 8, cubeIndicies, 36, device, &dataToSendToVSConstantBuffer, material));
+	}
+	worldManager->getEntities(&entities);
+
+	//last one is the camera
 	entities.push_back(new GameEntity(cube, 8, cubeIndicies, 36, device, &dataToSendToVSConstantBuffer, material));
-	entities.push_back(new GameEntity(cube, 8, cubeIndicies, 36, device, &dataToSendToVSConstantBuffer, material));
-	entities[1]->position(XMFLOAT4(2.0f, 0.0f, 0.0f, 0.0f));
-	entities[1]->layer(2);
+	entities[entities.size()-1]->position(XMFLOAT4(2.0f, 0.0f, 0.0f, 0.0f));
+	entities[entities.size() - 1]->layer(1);
+
 }
 
 // Loads shaders from compiled shader object (.cso) files, and uses the
@@ -284,6 +290,7 @@ void Game::OnResize()
 void Game::UpdateScene(float dt)
 {
 	gameManager->Update(dt);
+	worldManager->Update(dt);
 
 	// Update entities
 	for each (GameEntity* entity in entities)
