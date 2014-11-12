@@ -19,8 +19,8 @@ struct VSConstantBufferLayout;
 class GameEntity
 {
 public:
-	GameEntity(Vertex *vertices, UINT verticies_Length,
-		UINT *indices, UINT indicies_Length,
+	GameEntity(std::vector<Vertex>& vertices,
+		std::vector<UINT>& indices,
 		ID3D11Device *device,
 		VSConstantBufferLayout *constantBufferLayout,
 		Material *material);

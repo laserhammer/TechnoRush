@@ -1,6 +1,7 @@
 #pragma once
 
 #include <DirectXMath.h>
+#include <vector>
 #include "DirectXGame.h"
 
 #if defined(DEBUG) || defined(_DEBUG)
@@ -20,7 +21,7 @@ struct Vertex
 class Mesh
 {
 public:
-	Mesh(Vertex *vertices, UINT verticies_Length, UINT *indices, UINT indicies_Length, ID3D11Device *device);
+	Mesh(std::vector<Vertex>& vertices, std::vector<UINT>& indices, ID3D11Device *device);
 	~Mesh();
 
 	ID3D11Buffer* VertexBuffer();
@@ -29,7 +30,7 @@ public:
 
 private:
 
-	void GenerateBuffers(Vertex *vertices, UINT verticies_Length, UINT *indices, UINT indicies_Length, ID3D11Device *device);
+	void GenerateBuffers(std::vector<Vertex>& vertices, std::vector<UINT>& indices, ID3D11Device *device);
 
 private:
 

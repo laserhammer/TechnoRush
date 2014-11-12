@@ -6,9 +6,9 @@
 
 
 
-GameEntity::GameEntity(Vertex *vertices, UINT verticies_Length, UINT *indices, UINT indicies_Length, ID3D11Device *device, VSConstantBufferLayout *constantBufferLayout, Material* material)
+GameEntity::GameEntity(std::vector<Vertex>& vertices, std::vector<UINT>& indices, ID3D11Device *device, VSConstantBufferLayout *constantBufferLayout, Material* material)
 {
-	_mesh = new Mesh(vertices, verticies_Length, indices, indicies_Length, device);
+	_mesh = new Mesh(vertices, indices, device);
 	this->_constantBufferLayout = constantBufferLayout;
 	this->_material = material;
 	init();
