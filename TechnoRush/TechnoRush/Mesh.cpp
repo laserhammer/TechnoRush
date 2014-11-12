@@ -1,5 +1,7 @@
+
 #include "Mesh.h"
 #include "Game.h"
+
 
 
 Mesh::Mesh(Vertex *vertices, UINT verticies_Length, UINT *indices, UINT indicies_Length, ID3D11Device *device)

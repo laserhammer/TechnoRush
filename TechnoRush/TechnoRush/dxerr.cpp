@@ -14,6 +14,7 @@
 // This version only supports UNICODE.
 
 #include "dxerr.h"
+#include <sal.h>
 
 #include <stdio.h>
 #include <algorithm>

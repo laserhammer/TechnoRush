@@ -8,6 +8,10 @@
 #include "GameEntity.h"
 #include "Camera.h"
 #include "WICTextureLoader.h"
+#include "GameManager.h"
+#include "InputManager.h"
+#include "WorldManager.h"
+
 
 #pragma region Win32 Entry Point (WinMain)
 
@@ -50,8 +54,8 @@ Game::~Game()
 	ReleaseMacro(inputLayout);
 	ReleaseMacro(textureView);
 	ReleaseMacro(samplerState);
-	delete(camera);
 	delete(material);
+	delete(gameManager);
 	while (entities.size() > 0)
 	{
 		GameEntity* entity = entities[entities.size() - 1];
@@ -68,9 +72,9 @@ Game::~Game()
 // sets up our geometry and loads the shaders (among other things)
 bool Game::Init()
 {
-	xVel = 0;
-	yVel = 0;
-	camera = new Camera();
+	gameManager = new GameManager;
+	worldManager = new WorldManager();
+	//camera = new Camera();
 
 	if (!DirectXGame::Init())
 		return false;
@@ -86,8 +90,7 @@ bool Game::Init()
 // Creates the vertex and index buffers for a single triangle
 void Game::CreateGeometryBuffers()
 {
-	Vertex vertices[3];
-	Vertex verticesGreen[8];
+	Vertex cube[8];
 
 	textureView = nullptr;
 	samplerState = nullptr;
@@ -120,29 +123,42 @@ void Game::CreateGeometryBuffers()
 	std::cout << result;
 
 	material = new Material(textureView, samplerState, vertexShader, vsConstantBuffer, pixelShader, inputLayout);
+	
 
-	std::srand(time(0));
+	std::srand((unsigned int)time(0));
 
 	// Set up the vertices
-	vertices[0] = { XMFLOAT3(+0.0f, +1.0f, +0.0f), white, XMFLOAT2(0.5f, 0.0f) };
-	vertices[1] = { XMFLOAT3(-0.5f, +0.0f, +0.0f), white, XMFLOAT2(0.0f, 1.0f) };
-	vertices[2] = { XMFLOAT3(+0.5f, +0.0f, +0.0f), white, XMFLOAT2(1.f, 1.0f) };
+	//vertices[0] = { XMFLOAT3(+0.0f, +1.0f, +0.0f), white, XMFLOAT2(0.5f, 0.0f) };
+	//vertices[1] = { XMFLOAT3(-0.5f, +0.0f, +0.0f), white, XMFLOAT2(0.0f, 1.0f) };
+	//vertices[2] = { XMFLOAT3(+0.5f, +0.0f, +0.0f), white, XMFLOAT2(1.f, 1.0f) };
 
 	// Set up the indices
-	UINT indices[] = { 0, 2, 1 };
+	//UINT indices[] = { 0, 2, 1 };
 	//entities.push_back(new GameEntity(vertices, 3, indices, 3, device, &dataToSendToVSConstantBuffer, material));
 
 	//// Do the same thing but now for green triangles
-	verticesGreen[0] = { XMFLOAT3(-0.5f, +0.5f, +0.0f), white, XMFLOAT2(0.0f, 0.0f) };
-	verticesGreen[1] = { XMFLOAT3(+0.5f, +0.5f, +0.0f), white, XMFLOAT2(1.0f, 0.0f) };
-	verticesGreen[2] = { XMFLOAT3(+0.5f, -0.5f, +0.0f), white, XMFLOAT2(1.0f, 1.0f) };
-	verticesGreen[3] = { XMFLOAT3(-0.5f, -0.5f, +0.0f), white, XMFLOAT2(0.0f, 1.0f) };
-	verticesGreen[4] = { XMFLOAT3(-0.5f, +0.5f, -0.5f), white, XMFLOAT2(0.0f, 0.0f) };
-	verticesGreen[5] = { XMFLOAT3(+0.5f, +0.5f, -0.5f), white, XMFLOAT2(1.0f, 0.0f) };
-	verticesGreen[6] = { XMFLOAT3(+0.5f, -0.5f, -0.5f), white, XMFLOAT2(1.0f, 1.0f) };
-	verticesGreen[7] = { XMFLOAT3(-0.5f, -0.5f, -0.5f), white, XMFLOAT2(0.0f, 1.0f) };
-	UINT indiciesGreen[] = { 0, 1, 2,   0, 2, 3,   0, 4, 2,   5, 2, 4,   1, 5, 6,   6, 2, 1,   2, 6, 7,   3, 2, 7,  3, 2, 7,  7, 7, 0,  0, 7, 4};
-	entities.push_back(new GameEntity(verticesGreen, 4, indiciesGreen, 6, device, &dataToSendToVSConstantBuffer, material));
+	cube[0] = { XMFLOAT3(-0.5f, +0.5f, +0.0f), white, XMFLOAT2(0.0f, 0.0f) };
+	cube[1] = { XMFLOAT3(+0.5f, +0.5f, +0.0f), white, XMFLOAT2(1.0f, 0.0f) };
+	cube[2] = { XMFLOAT3(+0.5f, -0.5f, +0.0f), white, XMFLOAT2(1.0f, 1.0f) };
+	cube[3] = { XMFLOAT3(-0.5f, -0.5f, +0.0f), white, XMFLOAT2(0.0f, 1.0f) };
+	cube[4] = { XMFLOAT3(-0.5f, +0.5f, -0.5f), white, XMFLOAT2(0.0f, 0.0f) };
+	cube[5] = { XMFLOAT3(+0.5f, +0.5f, -0.5f), white, XMFLOAT2(1.0f, 0.0f) };
+	cube[6] = { XMFLOAT3(+0.5f, -0.5f, -0.5f), white, XMFLOAT2(1.0f, 1.0f) };
+	cube[7] = { XMFLOAT3(-0.5f, -0.5f, -0.5f), white, XMFLOAT2(0.0f, 1.0f) };
+	UINT cubeIndicies[] = { 2, 1, 0,   3, 2, 0,   1, 4, 0,   5, 4, 1,   6, 5, 1,   1, 2, 6,   7, 6, 2,   7, 2, 3,  0, 4, 7,  7, 3, 0,  4, 5, 6,  6, 7, 4};
+
+	for (int i = 0; i < 30; i++)
+	{
+		entities.push_back(new GameEntity(cube, 8, cubeIndicies, 36, device, &dataToSendToVSConstantBuffer, material));
+	}
+	worldManager->getEntities(&entities);
+
+	//last one is the camera
+	entities.push_back(new GameEntity(cube, 8, cubeIndicies, 36, device, &dataToSendToVSConstantBuffer, material));
+	entities[entities.size()-1]->position(XMFLOAT4(2.0f, 0.0f, 0.0f, 0.0f));
+	entities[entities.size() - 1]->layer(2);
+
+
 }
 
 // Loads shaders from compiled shader object (.cso) files, and uses the
@@ -268,17 +284,8 @@ void Game::OnResize()
 	// Handle base-level DX resize stuff
 	DirectXGame::OnResize();
 
-	// Update our projection matrix since the window size changed
-	
-	XMMATRIX P = XMMatrixPerspectiveFovLH(
-		0.5f * 3.1415926535f,
-		AspectRatio(),
-		0.1f,
-		100.0f);
-	XMStoreFloat4x4(&projectionMatrix, XMMatrixTranspose(P));
-	
-	//if (camera)
-	//	camera->Resize(AspectRatio());
+	if (gameManager)
+		gameManager->Resize(AspectRatio());
 }
 #pragma endregion
 
@@ -288,38 +295,25 @@ void Game::OnResize()
 // push it to the buffer on the device
 void Game::UpdateScene(float dt)
 {
-	//check to see what keys are being pressed
-	if (GetKeyState(0x44) & 0x80)
-	{
-		xVel = 2;
-	}
+	gameManager->Update(dt);
+	worldManager->Update(dt);
 
-	if (GetKeyState(0x41) & 0x80)
-	{
-		xVel = -2;
-	}
-
-	camera->Update();
 	// Update entities
 	for each (GameEntity* entity in entities)
 	{
-		entity->Update(dt, xVel, yVel);
+		entity->Update(dt);
 	}
 
 	// Update local constant buffer data
-	dataToSendToVSConstantBuffer.view = camera->view();//viewMatrix;
-	dataToSendToVSConstantBuffer.projection = projectionMatrix;
-
-	xVel = 0;
-	yVel = 0;
-
+	//dataToSendToVSConstantBuffer.view = gameManager->mainCamera()->view();
+	//dataToSendToVSConstantBuffer.projection = gameManager->mainCamera()->projection();
 }
 
 // Clear the screen, redraw everything, present
 void Game::DrawScene()
 {
 	
-	camera->RenderScene(&entities[0], entities.size(), renderTargetView, depthStencilView, deviceContext);
+	gameManager->RenderScene(&entities[0], entities.size(), renderTargetView, depthStencilView, deviceContext, dataToSendToVSConstantBuffer.view, dataToSendToVSConstantBuffer.projection);
 	// Present the buffer
 	HR(swapChain->Present(0, 0));
 
@@ -333,20 +327,18 @@ void Game::DrawScene()
 
 void Game::OnMouseDown(WPARAM btnState, int x, int y)
 {
-	prevMousePos.x = x;
-	prevMousePos.y = y;
-
+	InputManager::OnMouseDown(x, y);
 	SetCapture(hMainWnd);
 }
 
 void Game::OnMouseUp(WPARAM btnState, int x, int y)
 {
+	InputManager::OnMouseUp(x, y);
 	ReleaseCapture();
 }
 
 void Game::OnMouseMove(WPARAM btnState, int x, int y)
 {
-	prevMousePos.x = x;
-	prevMousePos.y = y;
+	InputManager::OnMouseMove(x, y);
 }
 #pragma endregion

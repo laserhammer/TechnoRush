@@ -15,7 +15,10 @@ using namespace DirectX;
 
 class GameEntity;
 class Material;
+class Mesh;
 class Camera;
+class GameManager;
+class WorldManager;
 
 // Struct to match vertex shader's constant buffer
 // You update one of these locally, then push it to the corresponding
@@ -57,7 +60,7 @@ private:
 
 	std::vector<GameEntity*> entities;
 
-	Camera* camera;
+	//Camera* camera;
 
 	// Our basic shaders for this example
 	ID3D11PixelShader* pixelShader;
@@ -83,6 +86,6 @@ private:
 	// determining how far the mouse moved in a single frame.
 	POINT prevMousePos;
 
-	float xVel;
-	float yVel;
+	GameManager* gameManager;
+	WorldManager* worldManager;
 };
