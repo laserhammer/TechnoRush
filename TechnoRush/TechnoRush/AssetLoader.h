@@ -1,29 +1,24 @@
 #pragma once
-#include <iostream>
-#include <fstream>
-#include <cstring>
-#include <vector>
+
 #include "GameEntity.h"
+#include "Game.h"
+#include "Material.h"
+#include "DirectXGame.h"
+
 
 using namespace std;
 
-
-class AssetLoader
+static class AssetLoader
 {
 public:
-	AssetLoader();
-	~AssetLoader();
 
-	void testFunction();
 
-	Mesh testFunction2();
+	// This will load OBJs
+	static GameEntity* LoadOBJ(ID3D11Device *device, VSConstantBufferLayout *constantBufferLayout, Material* material, ifstream& in_Stream);
 
-	char cStringInput[512];
 
-private:
-	ifstream inputStream;
-	ofstream outpitStream;
-	vector<int> vertices;
 
+
+	
 };
 

@@ -49,6 +49,7 @@ public:
 	void OnMouseUp(WPARAM btnState, int x, int y);
 	void OnMouseMove(WPARAM btnState, int x, int y);
 
+	
 
 private:
 	// Initialization for our "game" demo

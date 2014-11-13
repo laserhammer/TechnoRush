@@ -5,8 +5,8 @@
 class Obstacle : GameEntity
 {
 public:
-	Obstacle(float w, Vertex *vertices, UINT verticies_Length,
-		UINT *indices, UINT indicies_Length,
+	Obstacle(float w, std::vector<Vertex>& vertices, 
+		std::vector<UINT>& indices,
 		ID3D11Device *device,
 		VSConstantBufferLayout *constantBufferLayout,
 		Material *material);
