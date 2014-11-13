@@ -59,6 +59,7 @@ Game::~Game()
 	ReleaseMacro(samplerState);
 	delete(material);
 	delete(gameManager);
+	delete(worldManager);
 	while (entities.size() > 0)
 	{
 		GameEntity* entity = entities[entities.size() - 1];
@@ -144,7 +145,7 @@ void Game::CreateGeometryBuffers()
 	
 
 
-	for (int i = 0; i < 30; i++)
+	for (int i = 0; i < 45; i++)
 	{
 		entities.push_back(new GameEntity(cubeVec, cubeInd, device, &dataToSendToVSConstantBuffer, material));
 	}

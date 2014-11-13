@@ -21,24 +21,37 @@ WorldManager::WorldManager()
 
 WorldManager::~WorldManager()
 {
+	for (int i = 0; i < 9; ++i)
+	{
+		delete worldChunks[i];
+	}
 }
 
 void WorldManager::Update(float dt)
 {
 	if (InputManager::rArrowKey)
 	{
-		velocity.x = -0.005;
+		velocity.x = -0.01;
 	}
 	else if (InputManager::lArrowKey)
 	{
-		velocity.x = 0.005;
+		velocity.x = 0.01;
 	}
 	else
 	{
 		velocity.x = 0;
 	}
 	//TODO: get velocity from player
-	velocity.z = -0.005f;
+	velocity.z = -0.015f;
+
+	if (InputManager::uArrowKey)
+	{
+		velocity.z -= 0.015;
+	}
+	else if (InputManager::dArrowKey)
+	{
+		velocity.z += 0.01;
+	}
 
 	for (int i = 0; i < 9; i++)
 	{
