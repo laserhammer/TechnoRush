@@ -1,110 +1,122 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <FxCompile Include="Shaders\VertexShader.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{0e46f9d4-7139-413d-b0ed-9c27d6635a2a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DirectXGame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dxerr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameTimer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEntity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugCameraController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldChunk.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Obstacle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AssetLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DirectXGame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dxerr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameTimer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEntity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugCameraController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldChunk.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Obstacle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AssetLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
     <FxCompile Include="Shaders\PixelShader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Obstacle.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="WorldManager.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="WorldChunk.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="InputManager.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="DebugCameraController.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="DirectXGame.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="dxerr.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Game.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="GameManager.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="GameEntity.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="GameTimer.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Camera.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="DebugCameraController.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectXGame.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="dxerr.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Game.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="GameEntity.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="GameManager.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="GameTimer.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="InputManager.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Material.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Obstacle.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="WorldChunk.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="WorldManager.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Filter Include="Headers">
-      <UniqueIdentifier>{580a3ca7-10af-4aa1-a946-981169138a65}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source">
-      <UniqueIdentifier>{774d5b0a-b572-45bb-9aa7-0a9adcf1dff2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shaders">
-      <UniqueIdentifier>{99faca7d-5bf0-443b-ab36-a300273f4f74}</UniqueIdentifier>
-    </Filter>
+    <FxCompile Include="Shaders\VertexShader.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

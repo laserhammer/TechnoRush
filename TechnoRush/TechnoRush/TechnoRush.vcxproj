@@ -78,6 +78,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AssetLoader.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="DebugCameraController.h" />
     <ClInclude Include="DirectXGame.h" />
@@ -94,6 +95,7 @@
     <ClInclude Include="WorldManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AssetLoader.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="DebugCameraController.cpp" />
     <ClCompile Include="DirectXGame.cpp" />
