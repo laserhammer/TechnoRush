@@ -46,6 +46,10 @@ void GameManager::RenderScene(GameEntity** entities, int numEntities, ID3D11Rend
 	{
 		_debugCamera->RenderScene(entities, numEntities, renderTargetView, depthStencilView, deviceContext, viewData, projectionData);
 	}
+	else if (_currentGameState == Pause)
+	{
+		_uiCamera->RenderScene(entities, numEntities, renderTargetView, depthStencilView, deviceContext, viewData, projectionData);
+	}
 	else
 	{
 		_gameCamera->RenderScene(entities, numEntities, renderTargetView, depthStencilView, deviceContext, viewData, projectionData);
@@ -99,19 +103,24 @@ void GameManager::UpdateFSM()
 	}
 }
 
+GameState GameManager::getGameState()
+{
+	return _currentGameState;
+}
+
 void GameManager::ChangeGamestate(GameState newGameState)
 {
 	_currentGameState = newGameState;
 	switch (_currentGameState)
 	{
 	case Menu:
-		_debugCamera->cullingMask(3);
+		//_debugCamera->cullingMask(3);
 		break;
 	case Play:
-		_debugCamera->cullingMask(1);
+		//_debugCamera->cullingMask(1);
 		break;
 	case Pause:
-		_debugCamera->cullingMask(2);
+		//_debugCamera->cullingMask(2);
 		break;
 	default:
 		break;
@@ -148,6 +157,7 @@ void GameManager::InitCameras()
 	_uiCamera = new Camera();
 	_uiCamera->cullingMask(2);		//Can see ui
 	_uiCamera->clearRenderTarget(false);
+	_uiCamera->SetViewParameters(XMFLOAT3(0.0, 0.0, -5.0), XMFLOAT3(0.0, 0.0, 0.0), XMFLOAT3(0, 1, 0));
 	//Not sure what's up with orthographic... can't get it to work
-	//_uiCamera->orthographic(true);
+	_uiCamera->orthographic(true);
 }

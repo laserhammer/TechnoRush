@@ -16,9 +16,12 @@ public:
 	void getEntities(std::vector<GameEntity*>* _entities);
 
 private:
+	bool _forward, _back;
+	bool _left, _right;
 	XMFLOAT4 velocity;
-	WorldChunk* worldChunks[6];
+	WorldChunk* worldChunks[9];
 	//player
 	std::vector<GameEntity*> entities;
+
 };
 

@@ -142,10 +142,12 @@ GameEntity* AssetLoader::LoadOBJ(ID3D11Device *device, VSConstantBufferLayout *c
 
 
 	// Assemble each Vertex in the Vextex struct. Right now all the texture coordinates are the same
+	
 	for (int i = 0; i < vertPos.size(); i++)
 	{
 		objVertexVec[i] = { vertPos[i], white, XMFLOAT2(0.0f, 0.0f) };
 	}
+	
 
 	// Create a pointer to a new game entity
 	GameEntity* newOBJEntity = new GameEntity(objVertexVec, indices, device, constantBufferLayout, material);

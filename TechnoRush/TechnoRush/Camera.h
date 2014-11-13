@@ -42,7 +42,7 @@ private:
 	float _clearColor[4];
 	float _fieldOfView;
 	float _near, _far;
-	float _width, _height;
+	float _width;
 	bool _orthographic;
 	bool _clearDepth;
 	bool _clearStencil;

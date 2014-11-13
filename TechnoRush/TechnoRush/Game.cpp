@@ -94,7 +94,6 @@ bool Game::Init()
 void Game::CreateGeometryBuffers()
 {
 	std::vector<Vertex> cubeVec(8);
-	Vertex cube[8];
 
 	textureView = nullptr;
 	samplerState = nullptr;
@@ -131,27 +130,6 @@ void Game::CreateGeometryBuffers()
 
 	std::srand((unsigned int)time(0));
 
-	// Set up the vertices
-	//vertices[0] = { XMFLOAT3(+0.0f, +1.0f, +0.0f), white, XMFLOAT2(0.5f, 0.0f) };
-	//vertices[1] = { XMFLOAT3(-0.5f, +0.0f, +0.0f), white, XMFLOAT2(0.0f, 1.0f) };
-	//vertices[2] = { XMFLOAT3(+0.5f, +0.0f, +0.0f), white, XMFLOAT2(1.f, 1.0f) };
-
-	// Set up the indices
-	//UINT indices[] = { 0, 2, 1 };
-	//entities.push_back(new GameEntity(vertices, 3, indices, 3, device, &dataToSendToVSConstantBuffer, material));
-
-	//// Do the same thing but now for green triangles
-
-	cube[0] = { XMFLOAT3(-0.5f, +0.5f, +0.0f), white, XMFLOAT2(0.0f, 0.0f) };
-	cube[1] = { XMFLOAT3(+0.5f, +0.5f, +0.0f), white, XMFLOAT2(1.0f, 0.0f) };
-	cube[2] = { XMFLOAT3(+0.5f, -0.5f, +0.0f), white, XMFLOAT2(1.0f, 1.0f) };
-	cube[3] = { XMFLOAT3(-0.5f, -0.5f, +0.0f), white, XMFLOAT2(0.0f, 1.0f) };
-	cube[4] = { XMFLOAT3(-0.5f, +0.5f, -0.5f), white, XMFLOAT2(0.0f, 0.0f) };
-	cube[5] = { XMFLOAT3(+0.5f, +0.5f, -0.5f), white, XMFLOAT2(1.0f, 0.0f) };
-	cube[6] = { XMFLOAT3(+0.5f, -0.5f, -0.5f), white, XMFLOAT2(1.0f, 1.0f) };
-	cube[7] = { XMFLOAT3(-0.5f, -0.5f, -0.5f), white, XMFLOAT2(0.0f, 1.0f) };
-	UINT cubeIndicies[] = { 2, 1, 0,   3, 2, 0,   1, 4, 0,   5, 4, 1,   6, 5, 1,   1, 2, 6,   7, 6, 2,   7, 2, 3,  0, 4, 7,  7, 3, 0,  4, 5, 6,  6, 7, 4};
-
 	cubeVec[0] = { XMFLOAT3(-0.5f, +0.5f, +0.0f), white, XMFLOAT2(0.0f, 0.0f) };
 	cubeVec[1] = { XMFLOAT3(+0.5f, +0.5f, +0.0f), white, XMFLOAT2(1.0f, 0.0f) };
 	cubeVec[2] = { XMFLOAT3(+0.5f, -0.5f, +0.0f), white, XMFLOAT2(1.0f, 1.0f) };
@@ -163,11 +141,6 @@ void Game::CreateGeometryBuffers()
 
 	std::vector<UINT> cubeInd = { 2, 1, 0, 3, 2, 0, 1, 4, 0, 5, 4, 1, 6, 5, 1, 1, 2, 6, 7, 6, 2, 7, 2, 3, 0, 4, 7, 7, 3, 0, 4, 5, 6, 6, 7, 4 };
 
-	// This is the stream to open up the file
-	ifstream in_Stream1;
-	in_Stream1.open("Cube2.obj");
-
-
 	
 
 
@@ -177,13 +150,27 @@ void Game::CreateGeometryBuffers()
 	}
 	worldManager->getEntities(&entities);
 
-	//last one is the camera
+	// This is the stream to open up the file
+	ifstream in_Stream1;
+	in_Stream1.open("PlayerShip.obj");
 	entities.push_back(AssetLoader::LoadOBJ(device, &dataToSendToVSConstantBuffer, material, in_Stream1)); // The stream is for the OBJ to me loaded
-	entities[entities.size()-1]->position(XMFLOAT4(2.0f, 0.0f, 0.0f, 0.0f));
+	entities[entities.size() - 1]->position(XMFLOAT4(0.0f, 0.0f, -3.0f, 0.0f));
+	
+
+	in_Stream1.close();
+	in_Stream1.open("Cube2.obj");
+
+	//last one is the UI
+
+	entities.push_back(AssetLoader::LoadOBJ(device, &dataToSendToVSConstantBuffer, material, in_Stream1)); // The stream is for the OBJ to me loaded
+	entities[entities.size()-1]->position(XMFLOAT4(-4.5f, 3.5f, 0.0f, 0.0f));
 	entities[entities.size() - 1]->layer(2);
 
 	// Close the stream when we're done with it
 	in_Stream1.close();
+
+	
+
 }
 
 // Loads shaders from compiled shader object (.cso) files, and uses the
@@ -321,12 +308,16 @@ void Game::OnResize()
 void Game::UpdateScene(float dt)
 {
 	gameManager->Update(dt);
-	worldManager->Update(dt);
 
-	// Update entities
-	for each (GameEntity* entity in entities)
+	if (gameManager->getGameState() == Play)
 	{
-		entity->Update(dt);
+		worldManager->Update(dt);
+
+		// Update entities
+		for each (GameEntity* entity in entities)
+		{
+			entity->Update(dt);
+		}
 	}
 
 	// Update local constant buffer data
@@ -337,11 +328,9 @@ void Game::UpdateScene(float dt)
 // Clear the screen, redraw everything, present
 void Game::DrawScene()
 {
-	
 	gameManager->RenderScene(&entities[0], entities.size(), renderTargetView, depthStencilView, deviceContext, dataToSendToVSConstantBuffer.view, dataToSendToVSConstantBuffer.projection);
 	// Present the buffer
 	HR(swapChain->Present(0, 0));
-
 }
 
 #pragma endregion

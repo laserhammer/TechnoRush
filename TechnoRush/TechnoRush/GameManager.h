@@ -26,6 +26,7 @@ public:
 	void RenderScene(GameEntity** entities, int numEntities, ID3D11RenderTargetView* renderTargetView, ID3D11DepthStencilView* depthStencilView, ID3D11DeviceContext* deviceContext, DirectX::XMFLOAT4X4& viewData, DirectX::XMFLOAT4X4& projectionData);
 
 	void Resize(float aspectRatio);
+	GameState getGameState();
 
 private:
 	void UpdateFSM();
@@ -38,6 +39,7 @@ private:
 	Camera* _debugCamera;
 	Camera* _gameCamera;
 	Camera* _uiCamera;
+	
 
 	GameState _currentGameState;
 

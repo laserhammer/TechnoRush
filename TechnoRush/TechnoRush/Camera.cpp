@@ -10,8 +10,7 @@ Camera::Camera(void)
 	_near = 0.1f;
 	_far = 100.0f;
 
-	_width = 800;
-	_height = 600;
+	_width = 15.0f;
 
 	_orthographic = false;
 
@@ -57,7 +56,7 @@ void Camera::Resize(float aspectRatio)
 	}
 	else
 	{
-		P = XMMatrixOrthographicLH(_width, _height, _near, _far);
+		P = XMMatrixOrthographicLH(_width,_width / aspectRatio, _near, _far);
 	}
 	XMStoreFloat4x4(&_projection, XMMatrixTranspose(P));
 }
