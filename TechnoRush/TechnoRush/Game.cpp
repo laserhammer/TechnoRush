@@ -131,41 +131,44 @@ void Game::CreateGeometryBuffers()
 
 	std::srand((unsigned int)time(0));
 
-	cubeVec[0] = { XMFLOAT3(-0.5f, +0.5f, +0.0f), white, XMFLOAT2(0.0f, 0.0f) };
-	cubeVec[1] = { XMFLOAT3(+0.5f, +0.5f, +0.0f), white, XMFLOAT2(1.0f, 0.0f) };
-	cubeVec[2] = { XMFLOAT3(+0.5f, -0.5f, +0.0f), white, XMFLOAT2(1.0f, 1.0f) };
-	cubeVec[3] = { XMFLOAT3(-0.5f, -0.5f, +0.0f), white, XMFLOAT2(0.0f, 1.0f) };
-	cubeVec[4] = { XMFLOAT3(-0.5f, +0.5f, -0.5f), white, XMFLOAT2(0.0f, 0.0f) };
-	cubeVec[5] = { XMFLOAT3(+0.5f, +0.5f, -0.5f), white, XMFLOAT2(1.0f, 0.0f) };
-	cubeVec[6] = { XMFLOAT3(+0.5f, -0.5f, -0.5f), white, XMFLOAT2(1.0f, 1.0f) };
-	cubeVec[7] = { XMFLOAT3(-0.5f, -0.5f, -0.5f), white, XMFLOAT2(0.0f, 1.0f) };
+	//cubeVec[0] = { XMFLOAT3(-0.5f, +0.5f, +0.0f), white, XMFLOAT2(0.0f, 0.0f) };
+	//cubeVec[1] = { XMFLOAT3(+0.5f, +0.5f, +0.0f), white, XMFLOAT2(1.0f, 0.0f) };
+	//cubeVec[2] = { XMFLOAT3(+0.5f, -0.5f, +0.0f), white, XMFLOAT2(1.0f, 1.0f) };
+	//cubeVec[3] = { XMFLOAT3(-0.5f, -0.5f, +0.0f), white, XMFLOAT2(0.0f, 1.0f) };
+	//cubeVec[4] = { XMFLOAT3(-0.5f, +0.5f, -0.5f), white, XMFLOAT2(0.0f, 0.0f) };
+	//cubeVec[5] = { XMFLOAT3(+0.5f, +0.5f, -0.5f), white, XMFLOAT2(1.0f, 0.0f) };
+	//cubeVec[6] = { XMFLOAT3(+0.5f, -0.5f, -0.5f), white, XMFLOAT2(1.0f, 1.0f) };
+	//cubeVec[7] = { XMFLOAT3(-0.5f, -0.5f, -0.5f), white, XMFLOAT2(0.0f, 1.0f) };
 
-	std::vector<UINT> cubeInd = { 2, 1, 0, 3, 2, 0, 1, 4, 0, 5, 4, 1, 6, 5, 1, 1, 2, 6, 7, 6, 2, 7, 2, 3, 0, 4, 7, 7, 3, 0, 4, 5, 6, 6, 7, 4 };
+	//std::vector<UINT> cubeInd = { 2, 1, 0, 3, 2, 0, 1, 4, 0, 5, 4, 1, 6, 5, 1, 1, 2, 6, 7, 6, 2, 7, 2, 3, 0, 4, 7, 7, 3, 0, 4, 5, 6, 6, 7, 4 };
 
 	
-
-
-	for (int i = 0; i < 45; i++)
-	{
-		entities.push_back(new GameEntity(cubeVec, cubeInd, device, &dataToSendToVSConstantBuffer, material));
-	}
-	worldManager->getEntities(&entities);
-
 	// This is the stream to open up the file
 	ifstream in_Stream1;
+	for (int i = 0; i < 45; i++)
+	{
+		
+		in_Stream1.open("Cube3.obj");
+		entities.push_back(AssetLoader::LoadOBJ(device, &dataToSendToVSConstantBuffer, material, in_Stream1)); // The stream is for the OBJ to be loaded
+		in_Stream1.close();
+	}
+	
+	worldManager->getEntities(&entities);
+
+	
 	in_Stream1.open("PlayerShip.obj");
-	entities.push_back(AssetLoader::LoadOBJ(device, &dataToSendToVSConstantBuffer, material, in_Stream1)); // The stream is for the OBJ to me loaded
+	entities.push_back(AssetLoader::LoadOBJ(device, &dataToSendToVSConstantBuffer, material, in_Stream1)); // The stream is for the OBJ to be loaded
 	entities[entities.size() - 1]->position(XMFLOAT4(0.0f, 0.0f, -3.0f, 0.0f));
 	
 
-	in_Stream1.close();
-	in_Stream1.open("Cube2.obj");
-
 	//last one is the UI
 
-	entities.push_back(AssetLoader::LoadOBJ(device, &dataToSendToVSConstantBuffer, material, in_Stream1)); // The stream is for the OBJ to me loaded
+	in_Stream1.close();
+	in_Stream1.open("Cube3.obj");
+	entities.push_back(AssetLoader::LoadOBJ(device, &dataToSendToVSConstantBuffer, material, in_Stream1)); // The stream is for the OBJ to be loaded
 	entities[entities.size()-1]->position(XMFLOAT4(-4.5f, 3.5f, 0.0f, 0.0f));
 	entities[entities.size() - 1]->layer(2);
+
 
 	// Close the stream when we're done with it
 	in_Stream1.close();

@@ -1,5 +1,6 @@
 #include "AssetLoader.h"
 #include <vector>
+#include <array>
 #include <iostream>
 #include <fstream>
 #include <cstring>
@@ -23,7 +24,7 @@ GameEntity* AssetLoader::LoadOBJ(ID3D11Device *device, VSConstantBufferLayout *c
 	std::vector<XMFLOAT3> vertPos;
 
 	// This is a vector that holds the indices
-	std::vector<UINT> indices;
+	std::vector<std::array<UINT, 3>> indices;
 
 	// I was having an issue with faces. Faces that had more than 3 verts....might have been an OBJ export issue
 	int vertCount;
@@ -33,6 +34,8 @@ GameEntity* AssetLoader::LoadOBJ(ID3D11Device *device, VSConstantBufferLayout *c
 	
 	// This was recommended from the online resource
 	bool hasTexCoord = false;
+
+	std::vector<XMFLOAT3> norms;
 
 	// This is to check the next character from the file
 	char checkChar;
@@ -80,51 +83,65 @@ GameEntity* AssetLoader::LoadOBJ(ID3D11Device *device, VSConstantBufferLayout *c
 					// BTW, this has OBJ officially has a texture
 					hasTexCoord = true;
 				}
+
+				// if the next character is a 'n' then it's a normal
+				if (checkChar == 'n')
+				{
+					float vnx, vny, vnz;
+					in_Stream >> vnx >> vny >> vnz;
+
+					norms.push_back(XMFLOAT3(vnx, vny, vnz));
+				}
 				break;
 			case 'f':
-
+			{
 				// for this 'f'ace we athe start have 0 vertices
-				vertCount = 0;
-
-				// While the character is not the end of the line
-				while (checkChar != '\n' && !in_Stream.eof())
+				//Parse by ' '
+				while ((checkChar = in_Stream.get()) != ' ');
+				// We know that there will be exactly 3 sets of indicies to make one tri
+				char verts[3][32];
+				int vertsLength = 0;
+				for (int i = 0; i < 3; ++i)
 				{
-					// Get the next character
-					checkChar = in_Stream.get();
-
-					// If the character is a space and you have less than 3 vertices
-					if (checkChar == ' ' && vertCount < 3)
+					UINT index[] = { 0, 0, 0 };
+					while ((checkChar = in_Stream.get()) != ' ' && checkChar != '\n')
 					{
-						// Get the next character (which should be a number
-						checkChar = in_Stream.get();
-
-						// If it is indeed a number
-						if (isdigit(checkChar))
-						{
-							// Store the number
-							char firstChar = checkChar;
-
-							// Get the next character
-							checkChar = in_Stream.get();
-
-							// If the next character is a number
-							if (isdigit(checkChar))
-							{
-								// Get both digits
-								indices.push_back((((firstChar - '0') * 10) + (checkChar - '0')) - 1);
-							}
-							else
-							{
-								// If it wasn't a number, just do the on digit
-								indices.push_back(firstChar - '0' - 1);
-							}
-							// We only want 3 verts
-							vertCount++;
-						}
-						
+						verts[i][vertsLength++] = checkChar;
 					}
+					// Now parse by '/' and store values into index array vector
+					// Current index index(if that makes sense)
+					int k = 2;
+					// Current power of ten of the current index index(again, if that makes sense)
+					int digit = 0;
+					//for (int j = 0; j < vertsLengths[i]; ++j)
+					do
+					{
+						// Get int value of the current char relative to '0'
+						int temp = verts[i][vertsLength - 1] - 48;
+						// If we have a slash go to the next index index and reset the current digit
+						bool slash = temp < 0;
+						k -= slash;
+						// If we have a slash, reset the current digit
+						digit *= !slash;
+						// Multiply the current value to the power of 10 of the current digit
+						for (int j = 0; j < digit; ++j)
+						{
+							temp *= 10;
+						}
+						// else increment the current digit
+						digit += !slash;
 
+						// Increment the current index index by the current ascii value depending on what digit we're on
+						index[k] += temp * !slash;
+					} while (--vertsLength);
+					indices.push_back(std::array<UINT, 3>());
+					indices[indices.size() - 1][0] = index[0];
+					indices[indices.size() - 1][1] = index[1];
+					indices[indices.size() - 1][2] = index[2];
 				}
+
+				
+			}
 				break;
 			default:
 				// If this line has nothing useful, just skip it. This default makes the '#' case irrelevant....but it's still there anyway
@@ -140,17 +157,8 @@ GameEntity* AssetLoader::LoadOBJ(ID3D11Device *device, VSConstantBufferLayout *c
 	// The vector for the struct Vertex is now the right size
 	objVertexVec.resize(vertPos.size());
 
-
-	// Assemble each Vertex in the Vextex struct. Right now all the texture coordinates are the same
-	
-	for (int i = 0; i < vertPos.size(); i++)
-	{
-		objVertexVec[i] = { vertPos[i], white, XMFLOAT2(0.0f, 0.0f) };
-	}
-	
-
 	// Create a pointer to a new game entity
-	GameEntity* newOBJEntity = new GameEntity(objVertexVec, indices, device, constantBufferLayout, material);
+	GameEntity* newOBJEntity = new GameEntity(&vertPos, &indices, &vertTexCoord, &norms, &XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), device, constantBufferLayout, material);
 
 	// Return the poiter to the new game entity
 	return newOBJEntity;
