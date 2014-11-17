@@ -22,7 +22,7 @@ bool DebugCameraController::_forward, DebugCameraController::_back = false;
 bool DebugCameraController::_left, DebugCameraController::_right = false;
 bool DebugCameraController::_up, DebugCameraController::_down= false;
 
-void DebugCameraController::Update()
+void DebugCameraController::Update(float dt)
 {
 	// Listen for updates
 	_forward = InputManager::wKey;
@@ -39,7 +39,7 @@ void DebugCameraController::Update()
 	rotation.x += 1.0f * InputManager::lArrowKey;
 	rotation.x -= 1.0f * InputManager::rArrowKey;
 
-	OnPointerMoved(rotation);
+	OnPointerMoved(rotation, dt);
 
 	// Poll state bits set by the keyboard event inputs
 	_moveCommand.y += 1.0f * _forward;
@@ -65,7 +65,7 @@ void DebugCameraController::Update()
 	wCommand.z = command.z;
 
 	// Scale for sensitivity adjustment
-	wCommand = XMFLOAT3(wCommand.x * MOVEMENT_GAIN, wCommand.y * MOVEMENT_GAIN, wCommand.z * MOVEMENT_GAIN);
+	wCommand = XMFLOAT3(wCommand.x * MOVEMENT_GAIN * dt, wCommand.y * MOVEMENT_GAIN * dt, wCommand.z * MOVEMENT_GAIN * dt);
 
 	// Our vleocity is based on the command, also not that y is on the up-down axis
 	XMFLOAT3 velocity = XMFLOAT3(-wCommand.x, wCommand.z, wCommand.y);
@@ -79,9 +79,9 @@ void DebugCameraController::Update()
 	_camera->SetViewParameters(_position, get_LookPoint(), XMFLOAT3(0, 1, 0));
 }
 
-void DebugCameraController::OnPointerMoved(XMFLOAT2 deltaPosition)
+void DebugCameraController::OnPointerMoved(XMFLOAT2 deltaPosition, float dt)
 {
-	XMFLOAT2 rotationDelta = XMFLOAT2(deltaPosition.x * ROTATION_GAIN, deltaPosition.y * ROTATION_GAIN);
+	XMFLOAT2 rotationDelta = XMFLOAT2(deltaPosition.x * ROTATION_GAIN * dt, deltaPosition.y * ROTATION_GAIN * dt);
 
 	_pitch -= rotationDelta.y;
 	_yaw -= rotationDelta.x;

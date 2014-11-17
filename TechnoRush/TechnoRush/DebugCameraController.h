@@ -7,16 +7,16 @@ Loosely based on code from http://msdn.microsoft.com/en-us/library/windows/apps/
 #pragma once
 #include <DirectXMath.h>
 
-#define ROTATION_GAIN 0.0015f
-#define MOVEMENT_GAIN 0.01f
+#define ROTATION_GAIN 0.5f
+#define MOVEMENT_GAIN 5.0f
 
 class Camera;
-static class DebugCameraController
+class DebugCameraController
 {
 public:
-	static void Update();
+	static void Update(float dt);
 
-	static void OnPointerMoved(DirectX::XMFLOAT2 deltaPosition);
+	static void OnPointerMoved(DirectX::XMFLOAT2 deltaPosition, float dt);
 
 	static void init(Camera* camera);
 

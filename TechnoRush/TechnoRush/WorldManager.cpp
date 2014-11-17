@@ -31,26 +31,26 @@ void WorldManager::Update(float dt)
 {
 	if (InputManager::rArrowKey)
 	{
-		velocity.x = -0.01;
+		velocity.x = -5.0;
 	}
 	else if (InputManager::lArrowKey)
 	{
-		velocity.x = 0.01;
+		velocity.x = 5.0;
 	}
 	else
 	{
 		velocity.x = 0;
 	}
 	//TODO: get velocity from player
-	velocity.z = -0.015f;
+	velocity.z = -7.5f;
 
 	if (InputManager::uArrowKey)
 	{
-		velocity.z -= 0.015;
+		velocity.z -= 7.5;
 	}
 	else if (InputManager::dArrowKey)
 	{
-		velocity.z += 0.01;
+		velocity.z += 5.0;
 	}
 
 	for (int i = 0; i < 9; i++)
@@ -63,7 +63,7 @@ void WorldManager::getEntities(std::vector<GameEntity*>* _entities)
 {
 	entities = *_entities;
 
-	for (int i = 0; i < entities.size(); i++)
+	for (unsigned int i = 0; i < entities.size(); i++)
 	{
 		worldChunks[i % 9]->Obst.push_back(entities[i]);
 	}

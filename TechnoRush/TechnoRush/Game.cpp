@@ -43,7 +43,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 Game::Game(HINSTANCE hInstance) : DirectXGame(hInstance)
 {
 	// Set up our custom caption and window size
-	windowCaption = L"Demo DX11 Game";
+	windowCaption = L"Technorush";
 	windowWidth = 800;
 	windowHeight = 600;
 }
@@ -126,7 +126,7 @@ void Game::CreateGeometryBuffers()
 	HRESULT result = CreateWICTextureFromFile(device, deviceContext, L"../Textures/Test_card.png", 0, &textureView);
 	std::cout << result;
 
-	material = new Material(textureView, samplerState, vertexShader, vsConstantBuffer, pixelShader, inputLayout);
+	material = new Material(textureView, samplerState, vertexShader, vsConstantBuffer, lightBuffer, &lightData, pixelShader, inputLayout, device);
 	
 
 	std::srand((unsigned int)time(0));
@@ -184,14 +184,11 @@ void Game::LoadShadersAndInputLayout()
 {
 	// Load Vertex Shader --------------------------------------
 	ID3DBlob* vsBlob;
-	D3DReadFileToBlob(L"VertexShader.cso", &vsBlob);
+	//D3DReadFileToBlob(L"VertexShader.cso", &vsBlob);
+	D3DReadFileToBlob(L"VertexPhong.cso", &vsBlob);
 
 	// Create the shader on the device
-	HR(device->CreateVertexShader(
-		vsBlob->GetBufferPointer(),
-		vsBlob->GetBufferSize(),
-		NULL,
-		&vertexShader));
+	HR(device->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), NULL, &vertexShader));
 
 	CreateInputLayoutDescFromVertexShaderSignature(vsBlob, &inputLayout);
 
@@ -200,14 +197,11 @@ void Game::LoadShadersAndInputLayout()
 
 	// Load Pixel Shader ---------------------------------------
 	ID3DBlob* psBlob;
-	D3DReadFileToBlob(L"PixelShader.cso", &psBlob);
+	//D3DReadFileToBlob(L"PixelShader.cso", &psBlob);
+	D3DReadFileToBlob(L"PixelPhong.cso", &psBlob);
 
 	// Create the shader on the device
-	HR(device->CreatePixelShader(
-		psBlob->GetBufferPointer(),
-		psBlob->GetBufferSize(),
-		NULL,
-		&pixelShader));
+	HR(device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), NULL, &pixelShader));
 
 	// Clean up
 	ReleaseMacro(psBlob);
@@ -220,10 +214,21 @@ void Game::LoadShadersAndInputLayout()
 	cBufferDesc.CPUAccessFlags = 0;
 	cBufferDesc.MiscFlags = 0;
 	cBufferDesc.StructureByteStride = 0;
-	HR(device->CreateBuffer(
-		&cBufferDesc,
-		NULL,
-		&vsConstantBuffer));
+	HR(device->CreateBuffer(&cBufferDesc, NULL, &vsConstantBuffer));
+
+	D3D11_BUFFER_DESC lightCBufferDesc;
+	lightCBufferDesc.ByteWidth = sizeof(lightData);
+	lightCBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	lightCBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	lightCBufferDesc.CPUAccessFlags = 0;
+	lightCBufferDesc.MiscFlags = 0;
+	lightCBufferDesc.StructureByteStride = 0;
+	HR(device->CreateBuffer(&lightCBufferDesc, NULL, &lightBuffer));
+
+	//move this at some point
+	lightData.lightPos = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+	deviceContext->UpdateSubresource(lightBuffer, 0, NULL, &lightData, 0, 0);
+	//deviceContext->VSSetConstantBuffers(1, 1, &lightBuffer);
 }
 
 // From http://takinginitiative.wordpress.com/2011/12/11/directx-1011-basic-shader-reflection-automatic-input-layout-creation/

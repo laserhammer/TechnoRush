@@ -29,7 +29,12 @@ struct VSConstantBufferLayout
 	XMFLOAT4X4 view;
 	XMFLOAT4X4 projection;
 };
-struct PSConstantBufferLayout{};
+
+struct VSLightConstantBuffer
+{
+	XMFLOAT4 lightPos;
+};
+//struct PSConstantBufferLayout{};
 
 // Demo class which extends the base DirectXGame class
 class Game : public DirectXGame
@@ -77,6 +82,9 @@ private:
 	ID3D11InputLayout* inputLayout;
 	ID3D11Buffer* vsConstantBuffer;
 	VSConstantBufferLayout dataToSendToVSConstantBuffer;
+	ID3D11Buffer* lightBuffer;
+	VSLightConstantBuffer lightData;
+
 
 	// The matrices to go from model space
 	// to screen space

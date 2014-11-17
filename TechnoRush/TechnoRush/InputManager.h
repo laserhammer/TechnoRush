@@ -1,7 +1,7 @@
 #pragma once
 #include <DirectXMath.h>
 
-static class InputManager
+class InputManager
 {
 public:
 	static void Update();

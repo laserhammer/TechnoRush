@@ -27,7 +27,7 @@ GameEntity* AssetLoader::LoadOBJ(ID3D11Device *device, VSConstantBufferLayout *c
 	std::vector<std::array<UINT, 3>> indices;
 
 	// I was having an issue with faces. Faces that had more than 3 verts....might have been an OBJ export issue
-	int vertCount;
+	//int vertCount;
 
 	// This is for texture coordiantes (Not yet implemented)
 	std::vector<XMFLOAT2> vertTexCoord;
@@ -158,7 +158,7 @@ GameEntity* AssetLoader::LoadOBJ(ID3D11Device *device, VSConstantBufferLayout *c
 	objVertexVec.resize(vertPos.size());
 
 	// Create a pointer to a new game entity
-	GameEntity* newOBJEntity = new GameEntity(&vertPos, &indices, &vertTexCoord, &norms, &XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), device, constantBufferLayout, material);
+	GameEntity* newOBJEntity = new GameEntity(&vertPos, &indices, &vertTexCoord, &norms, device, constantBufferLayout, material);
 
 	// Return the poiter to the new game entity
 	return newOBJEntity;

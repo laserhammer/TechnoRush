@@ -8,7 +8,7 @@
 
 using namespace std;
 
-static class AssetLoader
+class AssetLoader
 {
 public:
 

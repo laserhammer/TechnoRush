@@ -22,17 +22,18 @@ WorldChunk::~WorldChunk()
 
 void WorldChunk::update(XMFLOAT4 vel, float dt)
 {
-	
-
-	position.x += vel.x;
-	position.y += vel.y;
-	position.z += vel.z;
+	float dx = vel.x * dt;
+	float dy = vel.y * dt;
+	float dz = vel.z * dt;
+	position.x += dx;
+	position.y += dy;
+	position.z += dz;
 	for (int i = 0; i < Obst.size(); i++)
 	{
 		obstPos = Obst[i]->position();
-		obstPos.x += vel.x;
-		obstPos.y += vel.y;
-		obstPos.z += vel.z;
+		obstPos.x += dx;
+		obstPos.y += dy;
+		obstPos.z += dz;
 		Obst[i]->position(obstPos);
 		Obst[i]->Update(dt);
 	}

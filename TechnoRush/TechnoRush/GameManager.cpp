@@ -26,7 +26,7 @@ void GameManager::Update(float dt)
 {
 	InputManager::Update();
 	if (_debugActive)
-		DebugCameraController::Update();
+		DebugCameraController::Update(dt);
 
 	//Update FSM
 	UpdateFSM();
@@ -152,12 +152,12 @@ void GameManager::InitCameras()
 	DebugCameraController::init(_debugCamera);
 	// Set to (approximately) the gameCamera's starting position
 	DebugCameraController::SetPosition(XMFLOAT3(0.0f, 2.5f, -5.0f));
-	DebugCameraController::SetOrientation(-0.465, 0.0);
+	DebugCameraController::SetOrientation(-0.465f, 0.0f);
 
 	_uiCamera = new Camera();
 	_uiCamera->cullingMask(2);		//Can see ui
 	_uiCamera->clearRenderTarget(false);
-	_uiCamera->SetViewParameters(XMFLOAT3(0.0, 0.0, -5.0), XMFLOAT3(0.0, 0.0, 0.0), XMFLOAT3(0, 1, 0));
+	_uiCamera->SetViewParameters(XMFLOAT3(0.0f, 0.0f, -5.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 1.0f, 0.0f));
 	//Not sure what's up with orthographic... can't get it to work
 	_uiCamera->orthographic(true);
 }
