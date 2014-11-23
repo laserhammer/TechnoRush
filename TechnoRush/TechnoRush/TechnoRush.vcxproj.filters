@@ -118,10 +118,10 @@
     <FxCompile Include="Shaders\VertexShader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="VertexPhong.hlsl">
+    <FxCompile Include="PixelPhong.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="PixelPhong.hlsl">
+    <FxCompile Include="VertexPhong.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

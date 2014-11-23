@@ -15,6 +15,7 @@ using namespace DirectX;
 struct Vertex
 {
 	XMFLOAT3 Position;
+	XMFLOAT4 Color;
 	XMFLOAT2 UV;
 	XMFLOAT3 Normal;
 };
@@ -22,7 +23,7 @@ struct Vertex
 class Mesh
 {
 public:
-	Mesh(std::vector<XMFLOAT3>* positions, std::vector<std::array<UINT, 3>>* indices, std::vector<XMFLOAT2>* uvs, std::vector<XMFLOAT3>* norms, ID3D11Device *device);
+	Mesh(std::vector<XMFLOAT3>* positions, std::vector<std::array<UINT, 3>>* indices, std::vector<XMFLOAT2>* uvs, std::vector<XMFLOAT3>* norms, XMFLOAT4* color, ID3D11Device *device);
 	~Mesh();
 
 	ID3D11Buffer* VertexBuffer();
@@ -35,7 +36,7 @@ public:
 
 private:
 
-	void GenerateBuffers(std::vector<XMFLOAT3>* positions, std::vector<std::array<UINT, 3>>* indices, std::vector<XMFLOAT2>* uvs, std::vector<XMFLOAT3>* norms, ID3D11Device *device);
+	void GenerateBuffers(std::vector<XMFLOAT3>* positions, std::vector<std::array<UINT, 3>>* indices, std::vector<XMFLOAT2>* uvs, std::vector<XMFLOAT3>* norms, XMFLOAT4* color, ID3D11Device *device);
 
 private:
 

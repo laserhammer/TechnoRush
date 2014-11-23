@@ -4,6 +4,12 @@
 #include "DebugCameraController.h"
 #include "Camera.h"
 #include "GameEntity.h"
+#include "Game.h"
+#include "WICTextureLoader.h"
+#include "GameManager.h"
+#include "InputManager.h"
+#include "WorldManager.h"
+#include "AssetLoader.h"
 
 
 GameManager::GameManager()
@@ -13,6 +19,8 @@ GameManager::GameManager()
 	_currentGameState = Menu;
 
 	_debugActive = false;
+
+	_worldManager = new WorldManager();
 }
 
 GameManager::~GameManager()
@@ -20,16 +28,58 @@ GameManager::~GameManager()
 	delete _debugCamera;
 	delete _gameCamera;
 	delete _uiCamera;
+	delete _worldManager;
+	AssetLoader::ReleaseAssets();
+
+	//while (_entities->size() > 0)
+	//{
+	//	GameEntity* entity = (*_entities)[_entities->size() - 1];
+	//	delete(entity);
+	//	_entities->pop_back();
+	//}
+	delete _entities;
+}
+
+void GameManager::LoadData(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
+{
+	AssetLoader::LoadAssets(device, deviceContext);
+
+	_entities = new std::vector<GameEntity*>();
+
+	int numObstacles = 45;
+	_entities->resize(numObstacles);
+	for (int i = 0; i < numObstacles; ++i)
+	{
+		(*_entities)[i] = new GameEntity(AssetLoader::obstacleMat, AssetLoader::cube, &AssetLoader::vsData);
+	}
+	_worldManager->getEntities(_entities);
+
+	_entities->resize(numObstacles + 2);
+	(*_entities)[numObstacles] = new GameEntity(AssetLoader::playerMat, AssetLoader::player, &AssetLoader::vsData);
+	(*_entities)[numObstacles]->position(XMFLOAT4(0.0f, 0.0f, -3.0f, 0.0f));
+
+	(*_entities)[numObstacles + 1] = new GameEntity(AssetLoader::obstacleMat, AssetLoader::cube, &AssetLoader::vsData);
+	(*_entities)[numObstacles + 1]->position(XMFLOAT4(-4.5f, 3.5f, 0.0f, 0.0f));
+	(*_entities)[numObstacles + 1]->layer(2);
 }
 
 void GameManager::Update(float dt)
 {
 	InputManager::Update();
 	if (_debugActive)
-		DebugCameraController::Update(dt);
+		DebugCameraController::Update();
 
 	//Update FSM
 	UpdateFSM();
+
+	if (_currentGameState == GameState::Play)
+	{
+		_worldManager->Update(dt);
+		for each (GameEntity* entity in *_entities)
+		{
+			entity->Update(dt);
+		}
+	}
 }
 
 Camera* GameManager::mainCamera()
@@ -40,20 +90,22 @@ Camera* GameManager::mainCamera()
 		return _gameCamera;
 }
 
-void GameManager::RenderScene(GameEntity** entities, int numEntities, ID3D11RenderTargetView* renderTargetView, ID3D11DepthStencilView* depthStencilView, ID3D11DeviceContext* deviceContext, XMFLOAT4X4& viewData, XMFLOAT4X4& projectionData)
+void GameManager::RenderScene(ID3D11RenderTargetView* renderTargetView, ID3D11DepthStencilView* depthStencilView, ID3D11DeviceContext* deviceContext)
 {
+	int numEntities = _entities->size();
+	Mesh* mesh = AssetLoader::player;
 	if (_debugActive)
 	{
-		_debugCamera->RenderScene(entities, numEntities, renderTargetView, depthStencilView, deviceContext, viewData, projectionData);
+		_debugCamera->RenderScene(&(*_entities)[0], numEntities, renderTargetView, depthStencilView, deviceContext, AssetLoader::vsData.view, AssetLoader::vsData.projection);
 	}
 	else if (_currentGameState == Pause)
 	{
-		_uiCamera->RenderScene(entities, numEntities, renderTargetView, depthStencilView, deviceContext, viewData, projectionData);
+		_uiCamera->RenderScene(&(*_entities)[0], numEntities, renderTargetView, depthStencilView, deviceContext, AssetLoader::vsData.view, AssetLoader::vsData.projection);
 	}
 	else
 	{
-		_gameCamera->RenderScene(entities, numEntities, renderTargetView, depthStencilView, deviceContext, viewData, projectionData);
-		_uiCamera->RenderScene(entities, numEntities, renderTargetView, depthStencilView, deviceContext, viewData, projectionData);
+		_gameCamera->RenderScene(&(*_entities)[0], numEntities, renderTargetView, depthStencilView, deviceContext, AssetLoader::vsData.view, AssetLoader::vsData.projection);
+		_uiCamera->RenderScene(&(*_entities)[0], numEntities, renderTargetView, depthStencilView, deviceContext, AssetLoader::vsData.view, AssetLoader::vsData.projection);
 	}
 }
 
@@ -157,7 +209,7 @@ void GameManager::InitCameras()
 	_uiCamera = new Camera();
 	_uiCamera->cullingMask(2);		//Can see ui
 	_uiCamera->clearRenderTarget(false);
-	_uiCamera->SetViewParameters(XMFLOAT3(0.0f, 0.0f, -5.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 1.0f, 0.0f));
+	_uiCamera->SetViewParameters(XMFLOAT3(0.0, 0.0, -5.0), XMFLOAT3(0.0, 0.0, 0.0), XMFLOAT3(0, 1, 0));
 	//Not sure what's up with orthographic... can't get it to work
 	_uiCamera->orthographic(true);
 }

@@ -3,32 +3,29 @@
 #include "Mesh.h"
 #include "Game.h"
 #include "Material.h"
+#include "AssetLoader.h"
 
 
 
-GameEntity::GameEntity(std::vector<XMFLOAT3>* positions, std::vector<std::array<UINT, 3>>* indices, std::vector<XMFLOAT2>* uvs, std::vector<XMFLOAT3>* norms, ID3D11Device *device, VSConstantBufferLayout *constantBufferLayout, Material* material)
+GameEntity::GameEntity(std::vector<XMFLOAT3>* positions, std::vector<std::array<UINT, 3>>* indices, std::vector<XMFLOAT2>* uvs, std::vector<XMFLOAT3>* norms, XMFLOAT4* color, ID3D11Device *device, VSConstantBufferLayout *constantBufferLayout, Material* material)
 {
-	_mesh = new Mesh(positions, indices, uvs, norms, device);
+	_mesh = new Mesh(positions, indices, uvs, norms, color, device);
 	this->_constantBufferLayout = constantBufferLayout;
 	this->_material = material;
 	init();
-	/*
-	D3D11_BUFFER_DESC cBufferDesc;
-	cBufferDesc.ByteWidth = sizeof(_lightData);
-	cBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	cBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cBufferDesc.CPUAccessFlags = 0;
-	cBufferDesc.MiscFlags = 0;
-	cBufferDesc.StructureByteStride = 0;
-	HR(device->CreateBuffer(&cBufferDesc, NULL, &_lightBuffer));
-	*/
 }
 
+GameEntity::GameEntity(Material* material, Mesh* mesh, VSConstantBufferLayout* constantBufferLayout)
+{
+	_mesh = mesh;
+	_material = material;
+	_constantBufferLayout = constantBufferLayout;
+	init();
+}
 
 GameEntity::~GameEntity()
 {
-	delete _mesh;
-	//ReleaseMacro(_lightBuffer);
+	//delete _mesh;
 }
 
 
@@ -72,12 +69,8 @@ void GameEntity::Draw(ID3D11DeviceContext* deviceContext)
 	// Set the current vertex and pixel shaders, as well the constant buffer for the vert shader
 	deviceContext->VSSetShader(_material->vertexShader(), NULL, 0);
 	ID3D11Buffer* buffer = _material->vsConstantBuffer();
-	deviceContext->VSSetConstantBuffers(0, 1, &buffer);
-	ID3D11Buffer* lightBuffer = _material->lightBuffer();
-	deviceContext->VSSetConstantBuffers(1, 1, &lightBuffer);
+	deviceContext->VSSetConstantBuffers(0, 1, &(buffer));
 	deviceContext->PSSetShader(_material->pixelShader(), NULL, 0);
-	ID3D11Buffer* psBuffer = _material->psConstantBuffer();
-	deviceContext->PSSetConstantBuffers(2, 1, &psBuffer);
 
 	// Set draw buffer
 	UINT stride = sizeof(Vertex);
@@ -96,10 +89,6 @@ void GameEntity::Draw(ID3D11DeviceContext* deviceContext)
 	// Send constant buffer
 	_constantBufferLayout->world = _world;
 	deviceContext->UpdateSubresource(_material->vsConstantBuffer(), 0, NULL, _constantBufferLayout, 0, 0);
-	//_lightData.lightPos = light;
-	//deviceContext->UpdateSubresource(_material->lightBuffer(), 0, NULL, _material->lightData(), 0, 0);
-
-	deviceContext->UpdateSubresource(_material->psConstantBuffer(), 0, NULL, &(_material->psData()), 0, 0);
 
 	//deviceContext->DrawIndexed(_mesh->Num_Indicies(), 0, 0);
 	deviceContext->Draw(_mesh->NumIndices(), 0);

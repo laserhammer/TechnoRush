@@ -4,9 +4,9 @@
 
 
 
-Mesh::Mesh(std::vector<XMFLOAT3>* positions, std::vector<std::array<UINT, 3>>* indices, std::vector<XMFLOAT2>* uvs, std::vector<XMFLOAT3>* norms, ID3D11Device *device)
+Mesh::Mesh(std::vector<XMFLOAT3>* positions, std::vector<std::array<UINT, 3>>* indices, std::vector<XMFLOAT2>* uvs, std::vector<XMFLOAT3>* norms, XMFLOAT4* color, ID3D11Device *device)
 {
-	GenerateBuffers(positions, indices, uvs, norms, device);
+	GenerateBuffers(positions, indices, uvs, norms, color, device);
 	_numIndices = indices->size();
 }
 
@@ -29,7 +29,7 @@ ID3D11Buffer* Mesh::NormalBuffer() { return _normalBuffer; }
 //ID3D10Buffer* NormalIndexBuffer;
 UINT Mesh::NumIndices() { return _numIndices; }
 
-void Mesh::GenerateBuffers(std::vector<XMFLOAT3>* positions, std::vector<std::array<UINT, 3>>* indices, std::vector<XMFLOAT2>* uvs, std::vector<XMFLOAT3>* norms, ID3D11Device *device)
+void Mesh::GenerateBuffers(std::vector<XMFLOAT3>* positions, std::vector<std::array<UINT, 3>>* indices, std::vector<XMFLOAT2>* uvs, std::vector<XMFLOAT3>* norms, XMFLOAT4* color, ID3D11Device *device)
 {
 	_numIndices = indices->size();
 	std::vector<Vertex> vertices = std::vector<Vertex>();
@@ -45,6 +45,7 @@ void Mesh::GenerateBuffers(std::vector<XMFLOAT3>* positions, std::vector<std::ar
 		vertices[i].Position = positions->at((*indices)[i][0] - 1);
 		vertices[i].UV = uvs->at((*indices)[i][1] - 1);
 		vertices[i].Normal = norms->at((*indices)[i][2] - 1);
+		vertices[i].Color = *color;
 	}
 	// Create the vertex buffer
 	D3D11_BUFFER_DESC vbd;

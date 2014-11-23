@@ -51,21 +51,21 @@ Game::Game(HINSTANCE hInstance) : DirectXGame(hInstance)
 Game::~Game()
 {
 	// Release all of the D3D stuff that's still hanging out
-	ReleaseMacro(vertexShader);
-	ReleaseMacro(pixelShader);
-	ReleaseMacro(vsConstantBuffer);
-	ReleaseMacro(inputLayout);
-	ReleaseMacro(textureView);
-	ReleaseMacro(samplerState);
-	delete(material);
+	//ReleaseMacro(vertexShader);
+	//ReleaseMacro(pixelShader);
+	//ReleaseMacro(vsConstantBuffer);
+	//ReleaseMacro(inputLayout);
+	//ReleaseMacro(textureView);
+	//ReleaseMacro(samplerState);
+	//delete(material);
 	delete(gameManager);
-	delete(worldManager);
-	while (entities.size() > 0)
-	{
-		GameEntity* entity = entities[entities.size() - 1];
-		delete(entity);
-		entities.pop_back();
-	}
+	//delete(worldManager);
+	//while (entities.size() > 0)
+	//{
+	//	GameEntity* entity = entities[entities.size() - 1];
+	//	delete(entity);
+	//	entities.pop_back();
+	//}
 }
 
 #pragma endregion
@@ -77,7 +77,7 @@ Game::~Game()
 bool Game::Init()
 {
 	gameManager = new GameManager;
-	worldManager = new WorldManager();
+	//worldManager = new WorldManager();
 	//camera = new Camera();
 
 	if (!DirectXGame::Init())
@@ -94,6 +94,9 @@ bool Game::Init()
 // Creates the vertex and index buffers for a single triangle
 void Game::CreateGeometryBuffers()
 {
+	//AssetLoader::LoadAssets(device, deviceContext);
+	gameManager->LoadData(device, deviceContext);
+	/*
 	std::vector<Vertex> cubeVec(8);
 
 	textureView = nullptr;
@@ -126,10 +129,10 @@ void Game::CreateGeometryBuffers()
 	HRESULT result = CreateWICTextureFromFile(device, deviceContext, L"../Textures/Test_card.png", 0, &textureView);
 	std::cout << result;
 
-	material = new Material(textureView, samplerState, vertexShader, vsConstantBuffer, lightBuffer, &lightData, pixelShader, inputLayout, device);
-	
+	material = new Material(textureView, samplerState, vertexShader, vsConstantBuffer, pixelShader, inputLayout);
+	*/
 
-	std::srand((unsigned int)time(0));
+	
 
 	//cubeVec[0] = { XMFLOAT3(-0.5f, +0.5f, +0.0f), white, XMFLOAT2(0.0f, 0.0f) };
 	//cubeVec[1] = { XMFLOAT3(+0.5f, +0.5f, +0.0f), white, XMFLOAT2(1.0f, 0.0f) };
@@ -144,11 +147,12 @@ void Game::CreateGeometryBuffers()
 
 	
 	// This is the stream to open up the file
+	/*
 	ifstream in_Stream1;
 	for (int i = 0; i < 45; i++)
 	{
-		
 		in_Stream1.open("Cube3.obj");
+		//in_Stream1.open("Sphere.obj");
 		entities.push_back(AssetLoader::LoadOBJ(device, &dataToSendToVSConstantBuffer, material, in_Stream1)); // The stream is for the OBJ to be loaded
 		in_Stream1.close();
 	}
@@ -173,7 +177,7 @@ void Game::CreateGeometryBuffers()
 	// Close the stream when we're done with it
 	in_Stream1.close();
 
-	
+	*/
 
 }
 
@@ -182,13 +186,18 @@ void Game::CreateGeometryBuffers()
 // vertex data to the device
 void Game::LoadShadersAndInputLayout()
 {
+	/*
 	// Load Vertex Shader --------------------------------------
 	ID3DBlob* vsBlob;
 	//D3DReadFileToBlob(L"VertexShader.cso", &vsBlob);
 	D3DReadFileToBlob(L"VertexPhong.cso", &vsBlob);
 
 	// Create the shader on the device
-	HR(device->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), NULL, &vertexShader));
+	HR(device->CreateVertexShader(
+		vsBlob->GetBufferPointer(),
+		vsBlob->GetBufferSize(),
+		NULL,
+		&vertexShader));
 
 	CreateInputLayoutDescFromVertexShaderSignature(vsBlob, &inputLayout);
 
@@ -201,7 +210,11 @@ void Game::LoadShadersAndInputLayout()
 	D3DReadFileToBlob(L"PixelPhong.cso", &psBlob);
 
 	// Create the shader on the device
-	HR(device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), NULL, &pixelShader));
+	HR(device->CreatePixelShader(
+		psBlob->GetBufferPointer(),
+		psBlob->GetBufferSize(),
+		NULL,
+		&pixelShader));
 
 	// Clean up
 	ReleaseMacro(psBlob);
@@ -215,25 +228,13 @@ void Game::LoadShadersAndInputLayout()
 	cBufferDesc.MiscFlags = 0;
 	cBufferDesc.StructureByteStride = 0;
 	HR(device->CreateBuffer(&cBufferDesc, NULL, &vsConstantBuffer));
-
-	D3D11_BUFFER_DESC lightCBufferDesc;
-	lightCBufferDesc.ByteWidth = sizeof(lightData);
-	lightCBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	lightCBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	lightCBufferDesc.CPUAccessFlags = 0;
-	lightCBufferDesc.MiscFlags = 0;
-	lightCBufferDesc.StructureByteStride = 0;
-	HR(device->CreateBuffer(&lightCBufferDesc, NULL, &lightBuffer));
-
-	//move this at some point
-	lightData.lightPos = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
-	deviceContext->UpdateSubresource(lightBuffer, 0, NULL, &lightData, 0, 0);
-	//deviceContext->VSSetConstantBuffers(1, 1, &lightBuffer);
+	*/
 }
 
 // From http://takinginitiative.wordpress.com/2011/12/11/directx-1011-basic-shader-reflection-automatic-input-layout-creation/
 void Game::CreateInputLayoutDescFromVertexShaderSignature(ID3DBlob* shaderBlob, ID3D11InputLayout** inputLayout)
 {
+	/*
 	// Reflect shader info
 	ID3D11ShaderReflection* vertexShaderReflection = NULL;
 	HR(D3DReflect(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&vertexShaderReflection));
@@ -293,6 +294,7 @@ void Game::CreateInputLayoutDescFromVertexShaderSignature(ID3DBlob* shaderBlob, 
 
 	// Free allocation shader reflection memory
 	ReleaseMacro(vertexShaderReflection);
+	*/
 }
 
 #pragma endregion
@@ -318,16 +320,16 @@ void Game::UpdateScene(float dt)
 {
 	gameManager->Update(dt);
 
-	if (gameManager->getGameState() == Play)
-	{
-		worldManager->Update(dt);
+	//if (gameManager->getGameState() == Play)
+	//{
+		
 
 		// Update entities
-		for each (GameEntity* entity in entities)
-		{
-			entity->Update(dt);
-		}
-	}
+		//for each (GameEntity* entity in entities)
+		//{
+		//	entity->Update(dt);
+		//}
+	//}
 
 	// Update local constant buffer data
 	//dataToSendToVSConstantBuffer.view = gameManager->mainCamera()->view();
@@ -337,7 +339,7 @@ void Game::UpdateScene(float dt)
 // Clear the screen, redraw everything, present
 void Game::DrawScene()
 {
-	gameManager->RenderScene(&entities[0], entities.size(), renderTargetView, depthStencilView, deviceContext, dataToSendToVSConstantBuffer.view, dataToSendToVSConstantBuffer.projection);
+	gameManager->RenderScene(renderTargetView, depthStencilView, deviceContext);
 	// Present the buffer
 	HR(swapChain->Present(0, 0));
 }

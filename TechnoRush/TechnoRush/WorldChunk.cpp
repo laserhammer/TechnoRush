@@ -25,6 +25,7 @@ void WorldChunk::update(XMFLOAT4 vel, float dt)
 	float dx = vel.x * dt;
 	float dy = vel.y * dt;
 	float dz = vel.z * dt;
+
 	position.x += dx;
 	position.y += dy;
 	position.z += dz;

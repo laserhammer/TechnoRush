@@ -23,18 +23,14 @@ class WorldManager;
 // Struct to match vertex shader's constant buffer
 // You update one of these locally, then push it to the corresponding
 // constant buffer on the device when it needs to be updated
+/*
 struct VSConstantBufferLayout
 {
 	XMFLOAT4X4 world;
 	XMFLOAT4X4 view;
 	XMFLOAT4X4 projection;
-};
-
-struct VSLightConstantBuffer
-{
-	XMFLOAT4 lightPos;
-};
-//struct PSConstantBufferLayout{};
+};*/
+struct PSConstantBufferLayout{};
 
 // Demo class which extends the base DirectXGame class
 class Game : public DirectXGame
@@ -69,22 +65,19 @@ private:
 	//Camera* camera;
 
 	// Our basic shaders for this example
-	ID3D11PixelShader* pixelShader;
-	ID3D11VertexShader* vertexShader;
+	//ID3D11PixelShader* pixelShader;
+	//ID3D11VertexShader* vertexShader;
 
 	// Texture data
 	//ID3D11Resource* texture;
-	ID3D11ShaderResourceView* textureView;
-	ID3D11SamplerState* samplerState;
-	Material* material;
+	//ID3D11ShaderResourceView* textureView;
+	//ID3D11SamplerState* samplerState;
+	//Material* material;
 
 	// A few more odds and ends we'll need
-	ID3D11InputLayout* inputLayout;
-	ID3D11Buffer* vsConstantBuffer;
-	VSConstantBufferLayout dataToSendToVSConstantBuffer;
-	ID3D11Buffer* lightBuffer;
-	VSLightConstantBuffer lightData;
-
+	//ID3D11InputLayout* inputLayout;
+	//ID3D11Buffer* vsConstantBuffer;
+	//VSConstantBufferLayout dataToSendToVSConstantBuffer;
 
 	// The matrices to go from model space
 	// to screen space
@@ -96,5 +89,5 @@ private:
 	POINT prevMousePos;
 
 	GameManager* gameManager;
-	WorldManager* worldManager;
+	//WorldManager* worldManager;
 };

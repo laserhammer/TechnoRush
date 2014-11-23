@@ -2,8 +2,10 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include <vector>
+
 class Camera;
 class GameEntity;
+class WorldManager;
 
 typedef enum
 {
@@ -19,11 +21,13 @@ public:
 	GameManager();
 	~GameManager();
 
+	void LoadData(ID3D11Device* device, ID3D11DeviceContext* deviceContext);
+
 	void Update(float dt);
 
 	Camera* mainCamera();
 
-	void RenderScene(GameEntity** entities, int numEntities, ID3D11RenderTargetView* renderTargetView, ID3D11DepthStencilView* depthStencilView, ID3D11DeviceContext* deviceContext, DirectX::XMFLOAT4X4& viewData, DirectX::XMFLOAT4X4& projectionData);
+	void RenderScene(ID3D11RenderTargetView* renderTargetView, ID3D11DepthStencilView* depthStencilView, ID3D11DeviceContext* deviceContext);
 
 	void Resize(float aspectRatio);
 	GameState getGameState();
@@ -40,8 +44,10 @@ private:
 	Camera* _gameCamera;
 	Camera* _uiCamera;
 	
-
 	GameState _currentGameState;
 
 	bool _debugActive;
+
+	WorldManager* _worldManager;
+	std::vector<GameEntity*>* _entities;
 };

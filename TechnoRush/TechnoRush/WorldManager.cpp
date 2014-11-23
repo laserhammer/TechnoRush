@@ -50,7 +50,7 @@ void WorldManager::Update(float dt)
 	}
 	else if (InputManager::dArrowKey)
 	{
-		velocity.z += 5.0;
+		velocity.z += 6.0;
 	}
 
 	for (int i = 0; i < 9; i++)
@@ -63,7 +63,7 @@ void WorldManager::getEntities(std::vector<GameEntity*>* _entities)
 {
 	entities = *_entities;
 
-	for (unsigned int i = 0; i < entities.size(); i++)
+	for (int i = 0; i < entities.size(); i++)
 	{
 		worldChunks[i % 9]->Obst.push_back(entities[i]);
 	}
