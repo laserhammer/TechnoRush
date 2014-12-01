@@ -35,22 +35,22 @@ void WorldManager::Update(float dt)
 	//use input to set acceleration
 	if (InputManager::rArrowKey)
 	{
-		accel.x += -60.0*dt;
+		accel.x += -0.12*dt;
 	}
 	else if (InputManager::lArrowKey)
 	{
-		accel.x += 60.0*dt;
+		accel.x += 0.12*dt;
 	}
 	
-	accel.z += -40.0f*dt;
+	accel.z += -0.08f*dt;
 
 	if (InputManager::uArrowKey)
 	{
-		accel.z -= 40.0f*dt;
+		accel.z -= 0.08f*dt;
 	}
 	else if (InputManager::dArrowKey)
 	{
-		accel.z += 40.0f*dt;
+		accel.z += 0.08f*dt;
 	}
 
 	//give the player a speed boost if they are flying close to the obstacles
@@ -60,15 +60,15 @@ void WorldManager::Update(float dt)
 		{
 			if (entities[i]->position().x - 1.25f < 3.0f && entities[i]->position().x + 1.25f > -3.0f)
 			{
-				accel.z -=  sqrt((entities[i]->position().x * entities[i]->position().x) + (entities[i]->position().z * entities[i]->position().z))*0.08;
+				accel.z -=  sqrt((entities[i]->position().x * entities[i]->position().x) + (entities[i]->position().z * entities[i]->position().z))*0.0001;
 			}
 		}
 	}
 
 	//limit max acceleration
-	if (accel.z < -80)
+	if (accel.z < -0.16)
 	{
-		accel.z = -80;
+		accel.z = -0.16;
 	}
 
 	//add acceleration to velocity
@@ -78,6 +78,10 @@ void WorldManager::Update(float dt)
 	slowVel.x = velocity.x;
 	slowVel.z = velocity.z / 3;
 
+	//Scroll the floor
+	float scrollWrap = 50.0f;
+	float velocityScale = 0.5f;
+
 	//'move' the world
 	if (InputManager::dArrowKey)
 	{
@@ -86,23 +90,23 @@ void WorldManager::Update(float dt)
 		{
 			worldChunks[i]->update(slowVel, dt);
 		}
+		_scroll = XMFLOAT2(modff(-slowVel.x   * velocityScale + _scroll.x, &scrollWrap), modff(slowVel.z  * velocityScale + _scroll.y, &scrollWrap));
 	}
 	else
 	{
 		for (int i = 0; i < 9; i++)
 		{
 			worldChunks[i]->update(velocity, dt);
+			
 		}
-		velocity.z *= 0.999f;
+		_scroll = XMFLOAT2(modff(-velocity.x   * velocityScale + _scroll.x, &scrollWrap), modff(velocity.z  * velocityScale + _scroll.y, &scrollWrap));
 	}
-	//Scroll the floor
-	float scrollWrap = 50.0f;
-	float velocityScale = 0.5f;
-	_scroll = XMFLOAT2(modff(-velocity.x * dt  * velocityScale + _scroll.x, &scrollWrap), modff(velocity.z * dt * velocityScale + _scroll.y, &scrollWrap));
+	
 
 	((ScrollingMaterial*)(_floor->mat()))->SetScroll(_scroll);
 	
 	//reset acceleration
+	velocity.z *= 0.997f;
 	velocity.x *= 0.995f;
 	accel.z = 0;
 	accel.x = 0;
