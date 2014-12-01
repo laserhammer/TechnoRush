@@ -35,12 +35,14 @@ void GameEntity::init()
 	XMStoreFloat4(&_rotation, XMQuaternionIdentity());
 	_position = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	_layer = 1;
+	_color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 void GameEntity::Update(float dt)
 {
 	// Load
-
+	XMFLOAT4 origin =  XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	XMVECTOR orig = XMLoadFloat4(&origin);
 	XMVECTOR pos = XMLoadFloat4(&_position);
 	//Rotation
 	XMVECTOR rot = XMLoadFloat4(&_rotation);
@@ -50,7 +52,7 @@ void GameEntity::Update(float dt)
 	// Change
 
 	// Update world matrix
-	XMMATRIX worldMatrix = XMMatrixTranspose(XMMatrixTransformation(pos, rot, scal, pos, rot, pos));
+	XMMATRIX worldMatrix = XMMatrixTranspose(XMMatrixTransformation(orig, rot, scal, orig, rot, pos));
 
 	// Store 
 
@@ -88,6 +90,7 @@ void GameEntity::Draw(ID3D11DeviceContext* deviceContext)
 
 	// Send constant buffer
 	_constantBufferLayout->world = _world;
+	_constantBufferLayout->color = _color;
 	deviceContext->UpdateSubresource(_material->vsConstantBuffer(), 0, NULL, _constantBufferLayout, 0, 0);
 
 	//deviceContext->DrawIndexed(_mesh->Num_Indicies(), 0, 0);
@@ -96,5 +99,12 @@ void GameEntity::Draw(ID3D11DeviceContext* deviceContext)
 
 XMFLOAT4 GameEntity::position() { return _position; }
 void GameEntity::position(XMFLOAT4 newPosition) { _position = newPosition; }
+XMFLOAT4 GameEntity::scale() { return _scale; }
+void GameEntity::scale(XMFLOAT4 newScale) { _scale = newScale; }
+XMFLOAT4 GameEntity::rotation() { return _rotation; }
+void GameEntity::rotation(XMFLOAT4 rotation) { _rotation = rotation; }
+XMFLOAT4 GameEntity::color() { return _color; }
+void GameEntity::color(XMFLOAT4 color) { _color = color; }
 unsigned int GameEntity::layer() { return _layer; }
 void GameEntity::layer(int newLayer) { _layer = newLayer; }
+Material* GameEntity::mat() { return _material; }

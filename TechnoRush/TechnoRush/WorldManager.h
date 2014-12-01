@@ -19,6 +19,8 @@ public:
 	float getSpeed();
 	void resetWorld();
 
+	void SetFloor(GameEntity* floor);
+
 private:
 	bool _forward, _back;
 	bool _left, _right;
@@ -31,6 +33,9 @@ private:
 	std::vector<GameEntity*> entities;
 	
 	void checkCollision();
+	
+	XMFLOAT2 _scroll;
+	GameEntity* _floor;
 
 };
 

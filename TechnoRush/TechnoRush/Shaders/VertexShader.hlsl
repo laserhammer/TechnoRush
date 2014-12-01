@@ -7,6 +7,7 @@ cbuffer perModel : register( b0 )
 	matrix world;
 	matrix view;
 	matrix projection;
+	float4 color;
 };
 
 // Defines what kind of data to expect as input
@@ -40,7 +41,7 @@ VertexToPixel main( VertexShaderInput input )
 	output.position = mul(float4(input.position, 1.0f), worldViewProj);
 
 	// Pass the color through - will be interpolated per-pixel by the rasterizer
-	output.color = input.color;
+	output.color = input.color * float4(color.xyz, 1.0f);
 
 	output.uv = input.uv;
 

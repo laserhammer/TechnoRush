@@ -3,6 +3,7 @@
 #include "GameEntity.h"
 #include "Game.h"
 #include "Material.h"
+#include "ScrollingMaterial.h"
 #include "DirectXGame.h"
 #include "Mesh.h"
 
@@ -13,6 +14,7 @@ struct VSConstantBufferLayout
 	XMFLOAT4X4 world;
 	XMFLOAT4X4 view;
 	XMFLOAT4X4 projection;
+	XMFLOAT4 color;
 };
 
 class AssetLoader
@@ -30,10 +32,13 @@ public:
 	static Mesh* quad;
 	static Mesh* cube;
 	static Mesh* player;
+	static Mesh* floor;
 	
 	static Material* playerMat;
-	static Material* floorMat;
+	static ScrollingMaterial* floorMat;
 	static Material* obstacleMat;
+	static Material* uiMat;
+	static Material* backgroundMat;
 
 	static VSConstantBufferLayout vsData;
 
@@ -44,6 +49,8 @@ private:
 	static ID3D11ShaderResourceView* playerTex;
 	static ID3D11ShaderResourceView* floorTex;
 	static ID3D11ShaderResourceView* obstacleTex;
+	static ID3D11ShaderResourceView* uiTex;
+	static ID3D11ShaderResourceView* backgroundTex;
 
 	static ID3D11VertexShader* playerVertexShader;
 	static ID3D11PixelShader* playerPixelShader;
@@ -51,10 +58,16 @@ private:
 	static ID3D11PixelShader* obstaclePixelShader;
 	static ID3D11VertexShader* floorVertexShader;
 	static ID3D11PixelShader* floorPixelShader;
+	static ID3D11VertexShader* uiVertexShader;
+	static ID3D11PixelShader* uiPixelShader;
+	static ID3D11VertexShader* backgroundVertexShader;
+	static ID3D11PixelShader* backgroundPixelShader;
 
 	static ID3D11InputLayout* playerShaderInputLayout;
 	static ID3D11InputLayout* obstacleShaderInputLayout;
 	static ID3D11InputLayout* floorShaderInputLayout;
+	static ID3D11InputLayout* uiShaderInputLayout;
+	static ID3D11InputLayout* backgroundShaderInputLayout;
 	
 	static ID3D11Buffer* vsConstantBuffer;
 

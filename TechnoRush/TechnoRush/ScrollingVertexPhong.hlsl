@@ -7,6 +7,11 @@ cbuffer perModel : register(b0)
 	float4 color;
 };
 
+cbuffer displacement : register(b1)
+{
+	float2 scroll;
+};
+
 struct VertexShaderInput
 {
 	float3 position		: POSITION;
@@ -17,7 +22,7 @@ struct VertexShaderInput
 
 struct VertexToPixel
 {
-	float4 position		: SV_POSITION;	
+	float4 position		: SV_POSITION;
 	float4 color		: COLOR;
 	float2 uv			: TEXCOORD0;
 	float3 normal		: NORMAL0;
@@ -34,8 +39,9 @@ VertexToPixel main(VertexShaderInput input)
 
 	output.color = input.color * float4(color.xyz, 1.0f);
 	float3 newNormal = float3(input.normal.xy, -input.normal.z);
-	output.normal = mul(newNormal, (float3x3)world);
-	output.uv = input.uv;
+		output.normal = mul(newNormal, (float3x3)world);
+	float2 modScroll = scroll % 50.0f;
+	output.uv = input.uv + modScroll;
 
 	return output;
 }
