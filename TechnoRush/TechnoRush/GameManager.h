@@ -47,6 +47,7 @@ private:
 	GameState _currentGameState;
 
 	bool _debugActive;
+	float _score;
 
 	WorldManager* _worldManager;
 	std::vector<GameEntity*>* _entities;

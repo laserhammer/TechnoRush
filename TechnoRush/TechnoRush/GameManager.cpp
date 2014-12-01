@@ -21,6 +21,8 @@ GameManager::GameManager()
 	_debugActive = false;
 
 	_worldManager = new WorldManager();
+
+	_score = 0;
 }
 
 GameManager::~GameManager()
@@ -79,6 +81,7 @@ void GameManager::Update(float dt)
 		{
 			entity->Update(dt);
 		}
+		_score += _worldManager->getSpeed();
 	}
 }
 
@@ -130,6 +133,7 @@ void GameManager::UpdateFSM()
 		{
 		case Menu:
 			ChangeGamestate(GameState::Play);
+			_score = 0;
 			break;
 		case EndGame:
 			ChangeGamestate(GameState::Menu);
@@ -152,6 +156,13 @@ void GameManager::UpdateFSM()
 		default:
 			break;
 		}
+	}
+
+	if (_currentGameState == GameState::Play && _worldManager->getCollide())
+	{
+		ChangeGamestate(GameState::Menu);
+		_worldManager->setCollide(false);
+		_worldManager->resetWorld();
 	}
 }
 

@@ -39,20 +39,20 @@ void WorldChunk::update(XMFLOAT4 vel, float dt)
 		Obst[i]->Update(dt);
 	}
 
-	if(position.z < - 20)
+	if(position.z < - 40)
 	{
-		position.z += 60;
+		position.z += 120;
 		generate(position);
 	}
 
-	if (position.x > 30)
+	if (position.x > 60)
 	{
-		position.x -= 60;
+		position.x -= 120;
 		generate(position);
 	}
-	else if (position.x < -30)
+	else if (position.x < -60)
 	{
-		position.x += 60;
+		position.x += 120;
 		generate(position);
 	}
 }
@@ -61,11 +61,16 @@ void WorldChunk::generate(XMFLOAT4 pos)
 {
 	for each(GameEntity* ob in Obst)
 	{
-		ob->position(XMFLOAT4(pos.x + (rand() % 20 - 10), 0.0f, pos.z + (rand() % 20 - 10), 1.0f));
+		ob->position(XMFLOAT4(pos.x + (rand() % 40 - 10), 0.0f, pos.z + (rand() % 40 - 10), 1.0f));
 	}
 }
 
 XMFLOAT4 WorldChunk::getPosition()
 {
 	return position;
+}
+
+void WorldChunk::setPosition(XMFLOAT4 pos)
+{
+	position = pos;
 }

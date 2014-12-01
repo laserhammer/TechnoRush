@@ -16,6 +16,7 @@ public:
 	void update(XMFLOAT4 Velocity, float dt);
 	void generate(XMFLOAT4 pos);
 	XMFLOAT4 getPosition();
+	void setPosition(XMFLOAT4 pos);
 private:
 	XMFLOAT4 position;
 	XMFLOAT4 obstPos;
