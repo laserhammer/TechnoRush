@@ -29,8 +29,15 @@ public:
 	//XMFLOAT4X4* World();
 	XMFLOAT4 position();
 	void position(XMFLOAT4 newPosition);
+	XMFLOAT4 scale();
+	void scale(XMFLOAT4 newScale);
+	XMFLOAT4 rotation();
+	void rotation(XMFLOAT4 rotation);
+	XMFLOAT4 color();
+	void color(XMFLOAT4 color);
 	unsigned int layer();
 	void layer(int newLayer);
+	Material* mat();
 
 	void Update(float dt);
 	void Draw(ID3D11DeviceContext* deviceContext);
@@ -46,6 +53,7 @@ private:
 	XMFLOAT4 _position;
 	XMFLOAT4 _rotation;
 	XMFLOAT4 _scale;
+	XMFLOAT4 _color;
 	//float velocity[2];
 	VSConstantBufferLayout *_constantBufferLayout;
 

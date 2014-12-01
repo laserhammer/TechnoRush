@@ -49,14 +49,15 @@ void Camera::Update()
 
 void Camera::Resize(float aspectRatio)
 {
+	_aspectRatio = aspectRatio;
 	XMMATRIX P;
 	if (!_orthographic)
 	{
-		P = XMMatrixPerspectiveFovLH(_fieldOfView, aspectRatio, _near, _far);
+		P = XMMatrixPerspectiveFovLH(_fieldOfView, _aspectRatio, _near, _far);
 	}
 	else
 	{
-		P = XMMatrixOrthographicLH(_width,_width / aspectRatio, _near, _far);
+		P = XMMatrixOrthographicLH(_width,_width / _aspectRatio, _near, _far);
 	}
 	XMStoreFloat4x4(&_projection, XMMatrixTranspose(P));
 }
@@ -92,6 +93,45 @@ void Camera::SetViewParameters(XMFLOAT3 position, XMFLOAT3 lookAt, XMFLOAT3 up)
 	Update();
 }
 
+void Camera::SetBackground(GameEntity* background)
+{
+	_background = background;
+
+	//Set the background's position to the far plane
+	XMVECTOR pos = XMLoadFloat4(&_position);
+	XMVECTOR lookAt = XMLoadFloat4(&_lookAt);
+	XMVECTOR forward = XMVector4Normalize(-pos + lookAt);
+	XMVECTOR newPosVec = pos + (forward *_far * .95);
+	XMFLOAT4 newQuadPos;
+	XMStoreFloat4(&newQuadPos, newPosVec);
+	_background->position(newQuadPos);
+
+	//Rotate the background to face the camera
+	//We assume that the quad starts out facing up
+	XMFLOAT4 quadForward = XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f);
+	XMVECTOR quadForWardVec = XMLoadFloat4(&quadForward);
+	//Need to rotate the quad's forward to match the opposite of the camera's forward
+	//First get the cross product of the two vectors
+	XMVECTOR axis = XMVector3Cross(quadForWardVec, -forward);
+	//Secondly, find the angle between the two vectors
+	XMVECTOR angleVec = XMVector4AngleBetweenVectors(quadForWardVec, -forward);
+	float angle;
+	XMStoreFloat(&angle, angleVec);
+	//Use the axis and the angle to create a rotation quaternion
+	XMVECTOR rot = XMQuaternionRotationRollPitchYawFromVector(angle * axis);
+
+	XMFLOAT4 quadRot;
+	XMStoreFloat4(&quadRot, rot);
+	_background->rotation(quadRot);
+
+	//Now scale the background
+	//The mesh starts out with a width and height of 1
+	//So therefore the scale values should be set to the desired with and height
+	//The width and height are based on the current view frustum
+	float yScale = 2 * _far * tanf(_fieldOfView / 2);
+	float xScale = yScale * _aspectRatio;
+	_background->scale(XMFLOAT4(xScale, yScale, 1.0f, 0.0f));
+}
 
 XMFLOAT4X4 Camera::view() { return _view; }
 XMFLOAT4X4 Camera::projection() { return _projection; }

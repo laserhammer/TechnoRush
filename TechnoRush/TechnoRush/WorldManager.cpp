@@ -1,5 +1,6 @@
 #include "WorldManager.h"
 #include "InputManager.h"
+#include "ScrollingMaterial.h"
 
 
 WorldManager::WorldManager()
@@ -57,6 +58,11 @@ void WorldManager::Update(float dt)
 	{
 		worldChunks[i]->update(velocity, dt);
 	}
+	float scrollWrap = 50.0f;
+	float velocityScale = 0.5f;
+	_scroll = XMFLOAT2(modff(-velocity.x * dt  * velocityScale + _scroll.x, &scrollWrap), modff(velocity.z * dt * velocityScale + _scroll.y, &scrollWrap));
+
+	((ScrollingMaterial*)(_floor->mat()))->SetScroll(_scroll);
 }
 
 void WorldManager::getEntities(std::vector<GameEntity*>* _entities)
@@ -72,4 +78,9 @@ void WorldManager::getEntities(std::vector<GameEntity*>* _entities)
 	{
 		chunk->generate(chunk->getPosition());
 	}
+}
+
+void WorldManager::SetFloor(GameEntity* floor)
+{
+	_floor = floor;
 }

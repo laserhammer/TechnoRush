@@ -91,6 +91,7 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Obstacle.h" />
+    <ClInclude Include="ScrollingMaterial.h" />
     <ClInclude Include="WorldChunk.h" />
     <ClInclude Include="WorldManager.h" />
   </ItemGroup>
@@ -108,6 +109,7 @@
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Obstacle.cpp" />
+    <ClCompile Include="ScrollingMaterial.cpp" />
     <ClCompile Include="WorldChunk.cpp" />
     <ClCompile Include="WorldManager.cpp" />
   </ItemGroup>
@@ -122,6 +124,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="ScrollingPixelPhong.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="ScrollingVertexPhong.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+    </FxCompile>
     <FxCompile Include="PixelPhong.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
     </FxCompile>

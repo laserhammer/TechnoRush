@@ -14,6 +14,8 @@ public:
 
 	void SetViewParameters(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 lookAt, DirectX::XMFLOAT3 up);
 
+	void SetBackground(GameEntity* background);
+
 	DirectX::XMFLOAT4X4 view();
 	DirectX::XMFLOAT4X4 projection();
 	unsigned int cullingMask();
@@ -43,11 +45,14 @@ private:
 	float _fieldOfView;
 	float _near, _far;
 	float _width;
+	float _aspectRatio;
 	bool _orthographic;
 	bool _clearDepth;
 	bool _clearStencil;
 	bool _clearRenderTarget;
 
 	unsigned int _cullingMask;
+
+	GameEntity* _background;
 };
 

@@ -13,10 +13,13 @@ Mesh* AssetLoader::sphere = NULL;
 Mesh* AssetLoader::quad = NULL;
 Mesh* AssetLoader::cube = NULL;
 Mesh* AssetLoader::player = NULL;
+Mesh* AssetLoader::floor = NULL;
 
 Material* AssetLoader::playerMat = NULL;
-Material* AssetLoader::floorMat = NULL;
+ScrollingMaterial* AssetLoader::floorMat = NULL;
 Material* AssetLoader::obstacleMat= NULL;
+Material* AssetLoader::uiMat = NULL;
+Material* AssetLoader::backgroundMat = NULL;
 
 ifstream AssetLoader::in_Stream;
 
@@ -24,6 +27,8 @@ ID3D11SamplerState* AssetLoader::samplerState;
 ID3D11ShaderResourceView* AssetLoader::playerTex;
 ID3D11ShaderResourceView* AssetLoader::floorTex;
 ID3D11ShaderResourceView* AssetLoader::obstacleTex;
+ID3D11ShaderResourceView* AssetLoader::uiTex;
+ID3D11ShaderResourceView* AssetLoader::backgroundTex;
 
 ID3D11VertexShader* AssetLoader::playerVertexShader;
 ID3D11PixelShader* AssetLoader::playerPixelShader;
@@ -31,10 +36,16 @@ ID3D11VertexShader* AssetLoader::obstacleVertexShader;
 ID3D11PixelShader* AssetLoader::obstaclePixelShader;
 ID3D11VertexShader* AssetLoader::floorVertexShader;
 ID3D11PixelShader* AssetLoader::floorPixelShader;
+ID3D11VertexShader* AssetLoader::uiVertexShader;
+ID3D11PixelShader* AssetLoader::uiPixelShader;
+ID3D11VertexShader* AssetLoader::backgroundVertexShader;
+ID3D11PixelShader* AssetLoader::backgroundPixelShader;
 
 ID3D11InputLayout* AssetLoader::playerShaderInputLayout;
 ID3D11InputLayout* AssetLoader::obstacleShaderInputLayout;
 ID3D11InputLayout* AssetLoader::floorShaderInputLayout;
+ID3D11InputLayout* AssetLoader::uiShaderInputLayout;
+ID3D11InputLayout* AssetLoader::backgroundShaderInputLayout;
 
 ID3D11Buffer* AssetLoader::vsConstantBuffer;
 VSConstantBufferLayout AssetLoader::vsData;
@@ -73,8 +84,19 @@ void AssetLoader::LoadAssets(ID3D11Device* device, ID3D11DeviceContext* deviceCo
 	player = new Mesh(&positions, &indices, &vertTexCoord, &norms, &XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), device);
 	in_Stream.close();
 
+	positions.clear();
+	indices.clear();
+	vertTexCoord.clear();
+	norms.clear();
+
+	in_Stream.open("../Resouces/Meshes/Floor.obj");
+	LoadMesh(positions, indices, vertTexCoord, norms);
+	floor = new Mesh(&positions, &indices, &vertTexCoord, &norms, &XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), device);
+	in_Stream.close();
+
 	D3D11_SAMPLER_DESC desc;
-	desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+	//desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+	desc.Filter = D3D11_FILTER_ANISOTROPIC;
 	desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -83,7 +105,7 @@ void AssetLoader::LoadAssets(ID3D11Device* device, ID3D11DeviceContext* deviceCo
 	desc.BorderColor[2] = 0;
 	desc.BorderColor[3] = 0;
 	desc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	desc.MaxAnisotropy = 0;
+	desc.MaxAnisotropy = 8;
 	desc.MaxLOD = 0;
 	desc.MinLOD = 0;
 	desc.MipLODBias = 0;
@@ -93,10 +115,14 @@ void AssetLoader::LoadAssets(ID3D11Device* device, ID3D11DeviceContext* deviceCo
 	CreateWICTextureFromFile(device, deviceContext, L"../Resouces/Textures/Test_card.png", 0, &playerTex);
 	CreateWICTextureFromFile(device, deviceContext, L"../Resouces/Textures/Test_card.png", 0, &floorTex);
 	CreateWICTextureFromFile(device, deviceContext, L"../Resouces/Textures/Test_card.png", 0, &obstacleTex);
+	CreateWICTextureFromFile(device, deviceContext, L"../Resouces/Textures/UIText.png", 0, &uiTex);
+	CreateWICTextureFromFile(device, deviceContext, L"../Resouces/Textures/Background.png", 0, &backgroundTex);
 
 	LoadShaderPair(playerVertexShader, L"VertexPhong.cso", playerPixelShader, L"PixelPhong.cso", playerShaderInputLayout, device);
 	LoadShaderPair(obstacleVertexShader, L"VertexPhong.cso", obstaclePixelShader, L"PixelPhong.cso", obstacleShaderInputLayout, device);
-	LoadShaderPair(floorVertexShader, L"VertexPhong.cso", floorPixelShader, L"PixelPhong.cso", floorShaderInputLayout, device);
+	LoadShaderPair(floorVertexShader, L"ScrollingVertexPhong.cso", floorPixelShader, L"PixelPhong.cso", floorShaderInputLayout, device);
+	LoadShaderPair(uiVertexShader, L"VertexPhong.cso", uiPixelShader, L"PixelPhong.cso", floorShaderInputLayout, device);
+	LoadShaderPair(backgroundVertexShader, L"VertexShader.cso", backgroundPixelShader, L"PixelShader.cso", backgroundShaderInputLayout, device);
 
 	D3D11_BUFFER_DESC cBufferDesc;
 	cBufferDesc.ByteWidth = sizeof(vsData);
@@ -109,7 +135,9 @@ void AssetLoader::LoadAssets(ID3D11Device* device, ID3D11DeviceContext* deviceCo
 
 	playerMat = new Material(playerTex, samplerState, playerVertexShader, vsConstantBuffer, playerPixelShader, playerShaderInputLayout);
 	obstacleMat = new Material(obstacleTex, samplerState, obstacleVertexShader, vsConstantBuffer, obstaclePixelShader, obstacleShaderInputLayout);
-	floorMat = new Material(floorTex, samplerState, floorVertexShader, vsConstantBuffer, floorPixelShader, floorShaderInputLayout);
+	floorMat = new ScrollingMaterial(floorTex, samplerState, floorVertexShader, vsConstantBuffer, floorPixelShader, floorShaderInputLayout, device, deviceContext);
+	uiMat = new Material(uiTex, samplerState, uiVertexShader, vsConstantBuffer, uiPixelShader, uiShaderInputLayout);
+	backgroundMat = new Material(backgroundTex, samplerState, backgroundVertexShader, vsConstantBuffer, backgroundPixelShader, backgroundShaderInputLayout);
 }
 
 void AssetLoader::ReleaseAssets()
@@ -120,24 +148,38 @@ void AssetLoader::ReleaseAssets()
 	ReleaseMacro(obstaclePixelShader);
 	ReleaseMacro(floorVertexShader);
 	ReleaseMacro(floorPixelShader);
+	ReleaseMacro(uiVertexShader);
+	ReleaseMacro(uiPixelShader);
+	ReleaseMacro(backgroundVertexShader);
+	ReleaseMacro(backgroundPixelShader);
+
 	ReleaseMacro(vsConstantBuffer);
+
 	ReleaseMacro(playerShaderInputLayout);
 	ReleaseMacro(obstacleShaderInputLayout);
 	ReleaseMacro(floorShaderInputLayout);
+	ReleaseMacro(uiShaderInputLayout);
+	ReleaseMacro(backgroundShaderInputLayout);
+
 	ReleaseMacro(playerTex);
 	ReleaseMacro(obstacleTex);
 	ReleaseMacro(floorTex);
+	ReleaseMacro(uiTex);
+	ReleaseMacro(backgroundTex);
+
 	ReleaseMacro(samplerState);
+
 	delete sphere;
 	delete quad;
 	delete cube;
 	delete player;
+	delete floor;
 
 	delete playerMat;
 	delete floorMat;
 	delete obstacleMat;
-
-
+	delete uiMat;
+	delete backgroundMat;
 }
 
 void AssetLoader::LoadMesh(std::vector<XMFLOAT3> &positions, std::vector<std::array<UINT, 3>> &indices, std::vector<XMFLOAT2> &vertTexCoord, std::vector<XMFLOAT3> &norms)
