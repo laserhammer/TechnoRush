@@ -105,8 +105,10 @@ void GameManager::Update(float dt)
 		}
 		break;
 	case GameState::Menu:
+		color = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 		for each (GameEntity* entity in *_entities)
 		{
+			entity->color(color);
 			entity->Update(dt);
 		}
 		break;
@@ -267,11 +269,26 @@ void GameManager::InitCameras()
 
 XMFLOAT4 GameManager::GetColorFromSpeed(float speed)
 {
-	float r = 0.412 + (speed / 0.11) * (.196 - 0.412);
-	r = r >= 1.0f ? 1.0f : r;
-	float g = 0.0 + (speed / 0.11) * (0.807 - 0.0);
-	g = g >= 1.0f ? 1.0f : g;
-	float b = 0.043 + (speed / 0.11) * (1.0 - 0.043);
-	b = b >= 1.0f ? 1.0f : b;
+	float r = 0;
+	float g = 0;
+	float b = 0;
+
+	if (speed < 0)
+	{
+		r = 0.412 - (speed / -0.04) * (1.0);
+		r = r <= 0.0f ? 0.0f : r;
+		g = 0.0;
+		b = 0.043 - (speed / -0.04) * (1.0);
+		b = b <= 0.0f ? 0.0f : b;
+	}
+	else
+	{
+		r = 0.412 + (speed / 0.11) * (.196 - 0.412);
+		r = r >= 1.0f ? 1.0f : r;
+		g = 0.0 + (speed / 0.11) * (0.807 - 0.0);
+		g = g >= 1.0f ? 1.0f : g;
+		b = 0.043 + (speed / 0.11) * (1.0 - 0.043);
+		b = b >= 1.0f ? 1.0f : b;
+	}
 	return XMFLOAT4(r, g, b, 1.0f);
 }

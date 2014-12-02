@@ -13,7 +13,7 @@ void UiManager::InitUi(Camera* uiCamera)
 	_title->rotation(_uiCamera->RotateToCamera(XMFLOAT4(0.0f, 1.0f, 0.0f, 0.f)));
 	_title->scale(XMFLOAT4(20.0f * 0.6f, 20.0f * 0.075f, 1.0f, 0.0f));
 	_titleData.scale = DirectX::XMFLOAT2(0.6f, 0.075f);
-	_titleData.displacement = DirectX::XMFLOAT2(0.014f, 0.016f);
+	_titleData.displacement = DirectX::XMFLOAT2(0.014f, 0.01f);
 
 	//Paused
 	_paused = new GameEntity(AssetLoader::uiMat, AssetLoader::quad, &AssetLoader::vsData);
@@ -21,7 +21,7 @@ void UiManager::InitUi(Camera* uiCamera)
 	_paused->rotation(_uiCamera->RotateToCamera(XMFLOAT4(0.0f, 1.0f, 0.0f, 0.f)));
 	_paused->scale(XMFLOAT4(20.0f * 0.6f, 20.0f * 0.075f, 1.0f, 0.0f));
 	_pausedData.scale = DirectX::XMFLOAT2(0.6f, 0.075f);
-	_pausedData.displacement = DirectX::XMFLOAT2(0.016, .096);
+	_pausedData.displacement = DirectX::XMFLOAT2(0.016, .09);
 
 	//Score Background
 	_scoreBack = new GameEntity(AssetLoader::scoreBackMat, AssetLoader::quad, &AssetLoader::vsData);
@@ -29,6 +29,11 @@ void UiManager::InitUi(Camera* uiCamera)
 	_scoreBack->position(XMFLOAT4(forward.x - 5, forward.y + 5, forward.z, forward.w));
 	_scoreBack->rotation(_uiCamera->RotateToCamera(XMFLOAT4(0.0f, 1.0f, 0.0f, 0.f)));
 	_scoreBack->scale(XMFLOAT4(5.0f, 2.0f, 1.0f, 0.0f));
+
+	//x offset = 0.021 +(0.044*n)
+	//y offset = 0.245
+	//width = 0.044
+	//height = 0.075
 }
 void UiManager::Update(GameState currentState)
 {
