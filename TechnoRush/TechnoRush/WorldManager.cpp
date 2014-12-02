@@ -95,19 +95,19 @@ void WorldManager::Update(float dt)
 		}
 		velocity.z *= 0.999f;
 	}
-	//Scroll the floor
-	float scrollWrap = 50.0f;
-	float velocityScale = 0.5f;
-	_scroll = XMFLOAT2(modff(-velocity.x * dt  * velocityScale + _scroll.x, &scrollWrap), modff(velocity.z * dt * velocityScale + _scroll.y, &scrollWrap));
-
-	((ScrollingMaterial*)(_floor->mat()))->SetScroll(_scroll);
-	
 	//reset acceleration
 	velocity.x *= 0.995f;
 	accel.z = 0;
 	accel.x = 0;
 
 	checkCollision();
+
+	//Scroll the floor
+	float scrollWrap = 50.0f;
+	float velocityScale = 1.0f;
+	_scroll = XMFLOAT2(modff(velocity.x * dt * velocityScale + _scroll.x, &scrollWrap), modff(velocity.z * dt * velocityScale + _scroll.y, &scrollWrap));
+
+	((ScrollingMaterial*)(_floor->mat()))->SetScroll(_scroll);
 }
 
 void WorldManager::getEntities(std::vector<GameEntity*>* _entities)

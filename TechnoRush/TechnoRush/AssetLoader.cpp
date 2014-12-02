@@ -18,7 +18,7 @@ Mesh* AssetLoader::floor = NULL;
 Material* AssetLoader::playerMat = NULL;
 ScrollingMaterial* AssetLoader::floorMat = NULL;
 Material* AssetLoader::obstacleMat= NULL;
-Material* AssetLoader::uiMat = NULL;
+AtlasMaterial* AssetLoader::uiMat = NULL;
 Material* AssetLoader::backgroundMat = NULL;
 
 ifstream AssetLoader::in_Stream;
@@ -121,7 +121,7 @@ void AssetLoader::LoadAssets(ID3D11Device* device, ID3D11DeviceContext* deviceCo
 	LoadShaderPair(playerVertexShader, L"VertexPhong.cso", playerPixelShader, L"PixelPhong.cso", playerShaderInputLayout, device);
 	LoadShaderPair(obstacleVertexShader, L"VertexPhong.cso", obstaclePixelShader, L"PixelPhong.cso", obstacleShaderInputLayout, device);
 	LoadShaderPair(floorVertexShader, L"ScrollingVertexPhong.cso", floorPixelShader, L"PixelPhong.cso", floorShaderInputLayout, device);
-	LoadShaderPair(uiVertexShader, L"VertexPhong.cso", uiPixelShader, L"PixelPhong.cso", floorShaderInputLayout, device);
+	LoadShaderPair(uiVertexShader, L"AtlasVertexShader.cso", uiPixelShader, L"AlphaCutoffPixelShader.cso", uiShaderInputLayout, device);
 	LoadShaderPair(backgroundVertexShader, L"VertexShader.cso", backgroundPixelShader, L"PixelShader.cso", backgroundShaderInputLayout, device);
 
 	D3D11_BUFFER_DESC cBufferDesc;
@@ -136,7 +136,7 @@ void AssetLoader::LoadAssets(ID3D11Device* device, ID3D11DeviceContext* deviceCo
 	playerMat = new Material(playerTex, samplerState, playerVertexShader, vsConstantBuffer, playerPixelShader, playerShaderInputLayout);
 	obstacleMat = new Material(obstacleTex, samplerState, obstacleVertexShader, vsConstantBuffer, obstaclePixelShader, obstacleShaderInputLayout);
 	floorMat = new ScrollingMaterial(floorTex, samplerState, floorVertexShader, vsConstantBuffer, floorPixelShader, floorShaderInputLayout, device, deviceContext);
-	uiMat = new Material(uiTex, samplerState, uiVertexShader, vsConstantBuffer, uiPixelShader, uiShaderInputLayout);
+	uiMat = new AtlasMaterial(uiTex, samplerState, uiVertexShader, vsConstantBuffer, uiPixelShader, uiShaderInputLayout, device, deviceContext);
 	backgroundMat = new Material(backgroundTex, samplerState, backgroundVertexShader, vsConstantBuffer, backgroundPixelShader, backgroundShaderInputLayout);
 }
 
@@ -383,47 +383,3 @@ void AssetLoader::CreateInputLayoutDescFromVertexShaderSignature(ID3DBlob* shade
 	ReleaseMacro(vertexShaderReflection);
 }
 
-/*GameEntity* AssetLoader::LoadOBJ(ID3D11Device *device, VSConstantBufferLayout *constantBufferLayout, Material* material, ifstream& in_Stream)
-{
-
-	// I took the colors for the game entity creation
-	XMFLOAT4 red = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-	XMFLOAT4 green = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
-	XMFLOAT4 blue = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
-	XMFLOAT4 white = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-
-
-
-	// This is a vector for all of the vertex structs
-	std::vector<Vertex> objVertexVec;
-
-	// This is vector that holds the specific vertex positions
-	std::vector<XMFLOAT3> vertPos;
-
-	// This is a vector that holds the indices
-	std::vector<std::array<UINT, 3>> indices;
-
-	// I was having an issue with faces. Faces that had more than 3 verts....might have been an OBJ export issue
-	int vertCount;
-
-	// This is for texture coordiantes (Not yet implemented)
-	std::vector<XMFLOAT2> vertTexCoord;
-	
-	// This was recommended from the online resource
-	bool hasTexCoord = false;
-
-	std::vector<XMFLOAT3> norms;
-
-	
-
-	// The vector for the struct Vertex is now the right size
-	objVertexVec.resize(vertPos.size());
-
-	// Create a pointer to a new game entity
-	GameEntity* newOBJEntity = new GameEntity(&vertPos, &indices, &vertTexCoord, &norms, &XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), device, constantBufferLayout, material);
-
-	// Return the poiter to the new game entity
-	return newOBJEntity;
-
-}
-*/

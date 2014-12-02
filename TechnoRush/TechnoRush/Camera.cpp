@@ -45,6 +45,10 @@ void Camera::Update()
 	XMMATRIX V = XMMatrixLookAtLH(position, target, up);
 	
 	XMStoreFloat4x4(&_view, XMMatrixTranspose(V));
+
+	//Get forward
+	XMVECTOR forward = XMVector4Normalize(-position + target);
+	XMStoreFloat4(&_forward, forward);
 }
 
 void Camera::Resize(float aspectRatio)
@@ -99,8 +103,8 @@ void Camera::SetBackground(GameEntity* background)
 
 	//Set the background's position to the far plane
 	XMVECTOR pos = XMLoadFloat4(&_position);
-	XMVECTOR lookAt = XMLoadFloat4(&_lookAt);
-	XMVECTOR forward = XMVector4Normalize(-pos + lookAt);
+	//XMVECTOR lookAt = XMLoadFloat4(&_lookAt);
+	XMVECTOR forward = XMLoadFloat4(&_forward);//XMVector4Normalize(-pos + lookAt);
 	XMVECTOR newPosVec = pos + (forward *_far * .95);
 	XMFLOAT4 newQuadPos;
 	XMStoreFloat4(&newQuadPos, newPosVec);
@@ -108,6 +112,7 @@ void Camera::SetBackground(GameEntity* background)
 
 	//Rotate the background to face the camera
 	//We assume that the quad starts out facing up
+	/*
 	XMFLOAT4 quadForward = XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f);
 	XMVECTOR quadForWardVec = XMLoadFloat4(&quadForward);
 	//Need to rotate the quad's forward to match the opposite of the camera's forward
@@ -123,6 +128,8 @@ void Camera::SetBackground(GameEntity* background)
 	XMFLOAT4 quadRot;
 	XMStoreFloat4(&quadRot, rot);
 	_background->rotation(quadRot);
+	*/
+	_background->rotation(RotateToCamera(XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f)));
 
 	//Now scale the background
 	//The mesh starts out with a width and height of 1
@@ -133,12 +140,35 @@ void Camera::SetBackground(GameEntity* background)
 	_background->scale(XMFLOAT4(xScale, yScale, 1.0f, 0.0f));
 }
 
+XMFLOAT4 Camera::RotateToCamera(DirectX::XMFLOAT4 rotateThis)
+{
+	XMVECTOR forward = XMLoadFloat4(&_forward);
+	//XMFLOAT4 quadForward = XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f);
+	XMVECTOR quadForWardVec = XMLoadFloat4(&rotateThis);
+	//Need to rotate the quad's forward to match the opposite of the camera's forward
+	//First get the cross product of the two vectors
+	XMVECTOR axis = XMVector3Cross(quadForWardVec, -forward);
+	//Secondly, find the angle between the two vectors
+	XMVECTOR angleVec = XMVector4AngleBetweenVectors(quadForWardVec, -forward);
+	float angle;
+	XMStoreFloat(&angle, angleVec);
+	//Use the axis and the angle to create a rotation quaternion
+	XMVECTOR rotVec = XMQuaternionRotationRollPitchYawFromVector(angle * axis);
+
+	XMFLOAT4 rot;
+	XMStoreFloat4(&rot, rotVec);
+	return rot;
+}
+
 XMFLOAT4X4 Camera::view() { return _view; }
 XMFLOAT4X4 Camera::projection() { return _projection; }
 unsigned int Camera::cullingMask() { return _cullingMask; }
 void Camera::cullingMask(int newMask) { _cullingMask = newMask; }
 XMFLOAT4 Camera::position() { return _position; }
 void Camera::position(DirectX::XMFLOAT4 newPosition) { _position = newPosition; }
+
+XMFLOAT4 Camera::forward() { return _forward; }
+
 bool Camera::orthographic() { return _orthographic; }
 void Camera::orthographic(bool isOrthographic) { _orthographic = isOrthographic; }
 bool Camera::clearDepth() { return _clearDepth; }

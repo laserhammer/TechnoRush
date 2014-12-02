@@ -4,6 +4,7 @@
 #include "Game.h"
 #include "Material.h"
 #include "ScrollingMaterial.h"
+#include "AtlasMaterial.h"
 #include "DirectXGame.h"
 #include "Mesh.h"
 
@@ -37,7 +38,7 @@ public:
 	static Material* playerMat;
 	static ScrollingMaterial* floorMat;
 	static Material* obstacleMat;
-	static Material* uiMat;
+	static AtlasMaterial* uiMat;
 	static Material* backgroundMat;
 
 	static VSConstantBufferLayout vsData;

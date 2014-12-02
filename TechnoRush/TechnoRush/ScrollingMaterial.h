@@ -7,7 +7,6 @@ struct Displacement
 {
 	DirectX::XMFLOAT2 scroll;
 	DirectX::XMFLOAT2 filler;
-	//DirectX::XMFLOAT4 moreFiller;
 };
 
 class ScrollingMaterial :

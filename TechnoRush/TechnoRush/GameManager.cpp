@@ -10,6 +10,8 @@
 #include "InputManager.h"
 #include "WorldManager.h"
 #include "AssetLoader.h"
+#include "UiManager.h"
+
 
 
 GameManager::GameManager()
@@ -32,7 +34,7 @@ GameManager::~GameManager()
 	delete _uiCamera;
 	delete _worldManager;
 	AssetLoader::ReleaseAssets();
-
+	UiManager::Release();
 	while (_entities->size() > 0)
 	{
 		GameEntity* entity = (*_entities)[_entities->size() - 1];
@@ -56,25 +58,27 @@ void GameManager::LoadData(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	}
 	_worldManager->getEntities(_entities);
 
-	_entities->resize(numObstacles + 4);
+	_entities->resize(numObstacles + 3);
 	//player
 	(*_entities)[numObstacles] = new GameEntity(AssetLoader::playerMat, AssetLoader::player, &AssetLoader::vsData);
 	(*_entities)[numObstacles]->position(XMFLOAT4(0.0f, 0.0f, -3.0f, 0.0f));
 
 	//UI placeholder
-	(*_entities)[numObstacles + 1] = new GameEntity(AssetLoader::obstacleMat, AssetLoader::cube, &AssetLoader::vsData);
-	(*_entities)[numObstacles + 1]->position(XMFLOAT4(-4.5f, 3.5f, 0.0f, 0.0f));
-	(*_entities)[numObstacles + 1]->layer(2);
+	//(*_entities)[numObstacles + 1] = new GameEntity(AssetLoader::obstacleMat, AssetLoader::cube, &AssetLoader::vsData);
+	//(*_entities)[numObstacles + 1]->position(XMFLOAT4(-4.5f, 3.5f, 0.0f, 0.0f));
+	//(*_entities)[numObstacles + 1]->layer(2);
 
 	//Floor
-	(*_entities)[numObstacles + 2] = new GameEntity(AssetLoader::floorMat, AssetLoader::floor, &AssetLoader::vsData);
-	(*_entities)[numObstacles + 2]->scale(XMFLOAT4(100.0f, 1.0f, 100.0f, 0.0f));
-	(*_entities)[numObstacles + 2]->position(XMFLOAT4(0.0f, -0.5f, 0.0f, 0.0f));
-	_worldManager->SetFloor((*_entities)[numObstacles + 2]);
+	(*_entities)[numObstacles + 1] = new GameEntity(AssetLoader::floorMat, AssetLoader::floor, &AssetLoader::vsData);
+	(*_entities)[numObstacles + 1]->scale(XMFLOAT4(100.0f, 1.0f, 100.0f, 0.0f));
+	(*_entities)[numObstacles + 1]->position(XMFLOAT4(0.0f, -0.5f, 0.0f, 0.0f));
+	_worldManager->SetFloor((*_entities)[numObstacles + 1]);
 
 	//Background
-	(*_entities)[numObstacles + 3] = new GameEntity(AssetLoader::backgroundMat, AssetLoader::quad, &AssetLoader::vsData);
-	_gameCamera->SetBackground((*_entities)[numObstacles + 3]);
+	(*_entities)[numObstacles + 2] = new GameEntity(AssetLoader::backgroundMat, AssetLoader::quad, &AssetLoader::vsData);
+	_gameCamera->SetBackground((*_entities)[numObstacles + 2]);
+
+	UiManager::InitUi(_uiCamera);
 }
 
 void GameManager::Update(float dt)
@@ -119,17 +123,8 @@ void GameManager::Update(float dt)
 	default:
 		break;
 	}
-	/*
-	if (_currentGameState == GameState::Play)
-	{
-		_worldManager->Update(dt);
-	}
-	for each (GameEntity* entity in *_entities)
-	{
-		entity->Update(dt);
->>>>>>> Ben
-	}
-	*/
+	UiManager::SetScore(_score);
+	UiManager::Update(_currentGameState);
 }
 
 Camera* GameManager::mainCamera()
@@ -148,14 +143,10 @@ void GameManager::RenderScene(ID3D11RenderTargetView* renderTargetView, ID3D11De
 	{
 		_debugCamera->RenderScene(&(*_entities)[0], numEntities, renderTargetView, depthStencilView, deviceContext, AssetLoader::vsData.view, AssetLoader::vsData.projection);
 	}
-	else if (_currentGameState == Pause)
-	{
-		_uiCamera->RenderScene(&(*_entities)[0], numEntities, renderTargetView, depthStencilView, deviceContext, AssetLoader::vsData.view, AssetLoader::vsData.projection);
-	}
 	else
 	{
 		_gameCamera->RenderScene(&(*_entities)[0], numEntities, renderTargetView, depthStencilView, deviceContext, AssetLoader::vsData.view, AssetLoader::vsData.projection);
-		_uiCamera->RenderScene(&(*_entities)[0], numEntities, renderTargetView, depthStencilView, deviceContext, AssetLoader::vsData.view, AssetLoader::vsData.projection);
+		UiManager::DrawUi(renderTargetView, depthStencilView, deviceContext, AssetLoader::vsData.view, AssetLoader::vsData.projection);
 	}
 }
 

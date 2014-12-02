@@ -79,6 +79,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AssetLoader.h" />
+    <ClInclude Include="AtlasMaterial.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="DebugCameraController.h" />
     <ClInclude Include="DirectXGame.h" />
@@ -92,11 +93,13 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Obstacle.h" />
     <ClInclude Include="ScrollingMaterial.h" />
+    <ClInclude Include="UiManager.h" />
     <ClInclude Include="WorldChunk.h" />
     <ClInclude Include="WorldManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssetLoader.cpp" />
+    <ClCompile Include="AtlasMaterial.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="DebugCameraController.cpp" />
     <ClCompile Include="DirectXGame.cpp" />
@@ -110,6 +113,7 @@
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Obstacle.cpp" />
     <ClCompile Include="ScrollingMaterial.cpp" />
+    <ClCompile Include="UiManager.cpp" />
     <ClCompile Include="WorldChunk.cpp" />
     <ClCompile Include="WorldManager.cpp" />
   </ItemGroup>
@@ -124,6 +128,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="AlphaCutoffPixelShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+    </FxCompile>
     <FxCompile Include="ScrollingPixelPhong.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
@@ -143,6 +151,10 @@
     </FxCompile>
     <FxCompile Include="VertexPhong.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="AtlasVertexShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
     </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

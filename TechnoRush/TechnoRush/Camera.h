@@ -16,12 +16,17 @@ public:
 
 	void SetBackground(GameEntity* background);
 
+	DirectX::XMFLOAT4 RotateToCamera(DirectX::XMFLOAT4 rotateThis);
+
 	DirectX::XMFLOAT4X4 view();
 	DirectX::XMFLOAT4X4 projection();
 	unsigned int cullingMask();
 	void cullingMask(int newMask);
 	DirectX::XMFLOAT4 position();
 	void position(DirectX::XMFLOAT4 newPosition);
+
+	DirectX::XMFLOAT4 forward();
+
 	bool orthographic();
 	void orthographic(bool isOrthographic);
 	bool clearDepth();
@@ -40,6 +45,8 @@ private:
 	DirectX::XMFLOAT4 _position;
 	DirectX::XMFLOAT4 _lookAt;
 	DirectX::XMFLOAT4 _up;
+
+	DirectX::XMFLOAT4 _forward;
 
 	float _clearColor[4];
 	float _fieldOfView;
