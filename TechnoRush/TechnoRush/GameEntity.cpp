@@ -87,6 +87,11 @@ void GameEntity::Draw(ID3D11DeviceContext* deviceContext)
 	ID3D11SamplerState* samplerState = _material->samplerState();
 	deviceContext->PSSetShaderResources(0, 1, &textureView);
 	deviceContext->PSSetSamplers(0, 1, &samplerState);
+	ID3D11ShaderResourceView* normalMap = _material->normalMap();
+	//if (normalMap) 
+	//{ 
+		deviceContext->PSSetShaderResources(1, 1, &normalMap);
+	//}
 
 	// Send constant buffer
 	_constantBufferLayout->world = _world;

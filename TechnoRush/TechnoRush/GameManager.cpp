@@ -50,11 +50,12 @@ void GameManager::LoadData(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 
 	_entities = new std::vector<GameEntity*>();
 
-	int numObstacles = 45;
+	int numObstacles = 46;
 	_entities->resize(numObstacles);
-	for (int i = 0; i < numObstacles; ++i)
+	for (int i = 0; i < numObstacles; i+=2)
 	{
 		(*_entities)[i] = new GameEntity(AssetLoader::obstacleMat, AssetLoader::cube, &AssetLoader::vsData);
+		(*_entities)[i + 1] = new GameEntity(AssetLoader::obstacleTowerMat, AssetLoader::tower, &AssetLoader::vsData);
 	}
 	_worldManager->getEntities(_entities);
 
@@ -90,12 +91,13 @@ void GameManager::Update(float dt)
 	//Update FSM
 	UpdateFSM();
 	XMFLOAT4 color;
+	float speed = abs(_worldManager->getSpeed());
 	switch (_currentGameState)
 	{
 	case GameState::Play:
 		_worldManager->Update(dt);
-		color = XMFLOAT4(0.0664f, 0.8984f, 1.0f, 1.0f);
-		_score += _worldManager->getSpeed();
+		color = GetColorFromSpeed(speed - 0.04f);
+		_score += speed;
 		for each (GameEntity* entity in *_entities)
 		{
 			entity->color(color);
@@ -261,4 +263,15 @@ void GameManager::InitCameras()
 	_uiCamera->SetViewParameters(XMFLOAT3(0.0, 0.0, -5.0), XMFLOAT3(0.0, 0.0, 0.0), XMFLOAT3(0, 1, 0));
 	//Not sure what's up with orthographic... can't get it to work
 	_uiCamera->orthographic(true);
+}
+
+XMFLOAT4 GameManager::GetColorFromSpeed(float speed)
+{
+	float r = 0.412 + (speed / 0.11) * (.196 - 0.412);
+	r = r >= 1.0f ? 1.0f : r;
+	float g = 0.0 + (speed / 0.11) * (0.807 - 0.0);
+	g = g >= 1.0f ? 1.0f : g;
+	float b = 0.043 + (speed / 0.11) * (1.0 - 0.043);
+	b = b >= 1.0f ? 1.0f : b;
+	return XMFLOAT4(r, g, b, 1.0f);
 }

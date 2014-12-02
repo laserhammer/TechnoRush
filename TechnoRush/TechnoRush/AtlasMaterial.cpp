@@ -3,8 +3,8 @@
 
 AtlasMaterial::AtlasMaterial(ID3D11ShaderResourceView* textureView, ID3D11SamplerState* samplerState,
 	ID3D11VertexShader* vertexShader, ID3D11Buffer* vsConstantBuffer,
-	ID3D11PixelShader* pixelShader, ID3D11InputLayout* inputLayout, ID3D11Device* device, ID3D11DeviceContext* deviceContext)
-	:Material(textureView, samplerState, vertexShader, vsConstantBuffer, pixelShader, inputLayout)
+	ID3D11PixelShader* pixelShader, ID3D11InputLayout* inputLayout, ID3D11ShaderResourceView* normalMap, ID3D11Device* device, ID3D11DeviceContext* deviceContext)
+	:Material(textureView, samplerState, vertexShader, vsConstantBuffer, pixelShader, inputLayout, normalMap)
 {
 	this->deviceContext = deviceContext;
 	_atlasData.displacement = DirectX::XMFLOAT2(0.0f, 0.0f);

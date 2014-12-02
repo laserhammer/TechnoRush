@@ -38,6 +38,7 @@ private:
 	void ChangeGamestate(GameState newGameState);
 	void ToggleDebug();
 	void InitCameras();
+	DirectX::XMFLOAT4 GetColorFromSpeed(float speed);
 
 private:
 	Camera* _debugCamera;

@@ -32,12 +32,15 @@ public:
 	static Mesh* sphere;
 	static Mesh* quad;
 	static Mesh* cube;
+	static Mesh* tower;
 	static Mesh* player;
 	static Mesh* floor;
 	
 	static Material* playerMat;
 	static ScrollingMaterial* floorMat;
 	static Material* obstacleMat;
+	static Material* obstacleTowerMat;
+	static Material* scoreBackMat;
 	static AtlasMaterial* uiMat;
 	static Material* backgroundMat;
 
@@ -49,7 +52,10 @@ private:
 	static ID3D11SamplerState* samplerState;
 	static ID3D11ShaderResourceView* playerTex;
 	static ID3D11ShaderResourceView* floorTex;
+	static ID3D11ShaderResourceView* floorNormMap;
 	static ID3D11ShaderResourceView* obstacleTex;
+	static ID3D11ShaderResourceView* obstacleTowerTex;
+	static ID3D11ShaderResourceView* black;
 	static ID3D11ShaderResourceView* uiTex;
 	static ID3D11ShaderResourceView* backgroundTex;
 

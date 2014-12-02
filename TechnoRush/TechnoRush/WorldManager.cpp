@@ -60,7 +60,7 @@ void WorldManager::Update(float dt)
 		{
 			if (entities[i]->position().x - 1.25f < 3.0f && entities[i]->position().x + 1.25f > -3.0f)
 			{
-				accel.z -=  sqrt((entities[i]->position().x * entities[i]->position().x) + (entities[i]->position().z * entities[i]->position().z))*0.0001;
+				accel.z -=  sqrt((entities[i]->position().x * entities[i]->position().x) + (entities[i]->position().z * entities[i]->position().z))*0.0002;
 			}
 		}
 	}
@@ -79,8 +79,8 @@ void WorldManager::Update(float dt)
 	slowVel.z = velocity.z / 3;
 
 	//Scroll the floor
-	float scrollWrap = 50.0f;
-	float velocityScale = 0.5f;
+	float scrollWrap = 25.0f;
+	float velocityScale = 0.25f;
 
 	//'move' the world
 	if (InputManager::dArrowKey)
@@ -143,7 +143,7 @@ void WorldManager::checkCollision()
 	{
 		if (entities[i]->position().z - 1.25f < -1.75f && entities[i]->position().z + 1.25f > -2.0f)
 		{
-			if (entities[i]->position().x - 1.25f < 0.5f && entities[i]->position().x + 1.25f > -0.5f)
+			if (entities[i]->position().x - 0.9f < 0.5f && entities[i]->position().x + 0.9f > -0.5f)
 			{
 				collide = true;
 			}

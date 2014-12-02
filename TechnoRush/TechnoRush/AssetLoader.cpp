@@ -12,12 +12,15 @@
 Mesh* AssetLoader::sphere = NULL;
 Mesh* AssetLoader::quad = NULL;
 Mesh* AssetLoader::cube = NULL;
+Mesh* AssetLoader::tower = NULL;
 Mesh* AssetLoader::player = NULL;
 Mesh* AssetLoader::floor = NULL;
 
 Material* AssetLoader::playerMat = NULL;
 ScrollingMaterial* AssetLoader::floorMat = NULL;
 Material* AssetLoader::obstacleMat= NULL;
+Material* AssetLoader::obstacleTowerMat = NULL;
+Material* AssetLoader::scoreBackMat = NULL;
 AtlasMaterial* AssetLoader::uiMat = NULL;
 Material* AssetLoader::backgroundMat = NULL;
 
@@ -26,7 +29,10 @@ ifstream AssetLoader::in_Stream;
 ID3D11SamplerState* AssetLoader::samplerState;
 ID3D11ShaderResourceView* AssetLoader::playerTex;
 ID3D11ShaderResourceView* AssetLoader::floorTex;
+ID3D11ShaderResourceView* AssetLoader::floorNormMap;
 ID3D11ShaderResourceView* AssetLoader::obstacleTex;
+ID3D11ShaderResourceView* AssetLoader::obstacleTowerTex;
+ID3D11ShaderResourceView* AssetLoader::black;
 ID3D11ShaderResourceView* AssetLoader::uiTex;
 ID3D11ShaderResourceView* AssetLoader::backgroundTex;
 
@@ -59,7 +65,7 @@ void AssetLoader::LoadAssets(ID3D11Device* device, ID3D11DeviceContext* deviceCo
 
 	std::srand((unsigned int)time(0));
 
-	in_Stream.open("../Resouces/Meshes/Quad.obj");
+	in_Stream.open("../Resources/Meshes/Quad.obj");
 	LoadMesh(positions, indices, vertTexCoord, norms);
 	quad = new Mesh(&positions, &indices, &vertTexCoord, &norms, &XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), device);
 	in_Stream.close();
@@ -69,7 +75,7 @@ void AssetLoader::LoadAssets(ID3D11Device* device, ID3D11DeviceContext* deviceCo
 	vertTexCoord.clear();
 	norms.clear();
 
-	in_Stream.open("../Resouces/Meshes/Cube.obj");
+	in_Stream.open("../Resources/Meshes/Cube.obj");
 	LoadMesh(positions, indices, vertTexCoord, norms);
 	cube = new Mesh(&positions, &indices, &vertTexCoord, &norms, &XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), device);
 	in_Stream.close();
@@ -79,7 +85,17 @@ void AssetLoader::LoadAssets(ID3D11Device* device, ID3D11DeviceContext* deviceCo
 	vertTexCoord.clear();
 	norms.clear();
 
-	in_Stream.open("../Resouces/Meshes/PlayerShip.obj");
+	in_Stream.open("../Resources/Meshes/Tower.obj");
+	LoadMesh(positions, indices, vertTexCoord, norms);
+	tower = new Mesh(&positions, &indices, &vertTexCoord, &norms, &XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), device);
+	in_Stream.close();
+
+	positions.clear();
+	indices.clear();
+	vertTexCoord.clear();
+	norms.clear();
+
+	in_Stream.open("../Resources/Meshes/PlayerShip.obj");
 	LoadMesh(positions, indices, vertTexCoord, norms);
 	player = new Mesh(&positions, &indices, &vertTexCoord, &norms, &XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), device);
 	in_Stream.close();
@@ -89,7 +105,7 @@ void AssetLoader::LoadAssets(ID3D11Device* device, ID3D11DeviceContext* deviceCo
 	vertTexCoord.clear();
 	norms.clear();
 
-	in_Stream.open("../Resouces/Meshes/Floor.obj");
+	in_Stream.open("../Resources/Meshes/Floor.obj");
 	LoadMesh(positions, indices, vertTexCoord, norms);
 	floor = new Mesh(&positions, &indices, &vertTexCoord, &norms, &XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), device);
 	in_Stream.close();
@@ -112,15 +128,18 @@ void AssetLoader::LoadAssets(ID3D11Device* device, ID3D11DeviceContext* deviceCo
 
 	device->CreateSamplerState(&desc, &samplerState);
 
-	CreateWICTextureFromFile(device, deviceContext, L"../Resouces/Textures/Test_card.png", 0, &playerTex);
-	CreateWICTextureFromFile(device, deviceContext, L"../Resouces/Textures/Test_card.png", 0, &floorTex);
-	CreateWICTextureFromFile(device, deviceContext, L"../Resouces/Textures/Test_card.png", 0, &obstacleTex);
-	CreateWICTextureFromFile(device, deviceContext, L"../Resouces/Textures/UIText.png", 0, &uiTex);
-	CreateWICTextureFromFile(device, deviceContext, L"../Resouces/Textures/Background.png", 0, &backgroundTex);
+	CreateWICTextureFromFile(device, deviceContext, L"../Resources/Textures/playerTexture.png", 0, &playerTex);
+	CreateWICTextureFromFile(device, deviceContext, L"../Resources/Textures/FloorTex.png", 0, &floorTex);
+	CreateWICTextureFromFile(device, deviceContext, L"../Resources/Textures/TileNormal.png", 0, &floorNormMap);
+	CreateWICTextureFromFile(device, deviceContext, L"../Resources/Textures/CubeTexture.png", 0, &obstacleTex);
+	CreateWICTextureFromFile(device, deviceContext, L"../Resources/Textures/TowerTexture.png", 0, &obstacleTowerTex);
+	CreateWICTextureFromFile(device, deviceContext, L"../Resources/Textures/Black.png", 0, &black);
+	CreateWICTextureFromFile(device, deviceContext, L"../Resources/Textures/UIText.png", 0, &uiTex);
+	CreateWICTextureFromFile(device, deviceContext, L"../Resources/Textures/Background.png", 0, &backgroundTex);
 
-	LoadShaderPair(playerVertexShader, L"VertexPhong.cso", playerPixelShader, L"PixelPhong.cso", playerShaderInputLayout, device);
-	LoadShaderPair(obstacleVertexShader, L"VertexPhong.cso", obstaclePixelShader, L"PixelPhong.cso", obstacleShaderInputLayout, device);
-	LoadShaderPair(floorVertexShader, L"ScrollingVertexPhong.cso", floorPixelShader, L"PixelPhong.cso", floorShaderInputLayout, device);
+	LoadShaderPair(playerVertexShader, L"VertexPhong.cso", playerPixelShader, L"IlluminatiPixelPhong.cso", playerShaderInputLayout, device);
+	LoadShaderPair(obstacleVertexShader, L"VertexPhong.cso", obstaclePixelShader, L"IlluminatiPixelPhong.cso", obstacleShaderInputLayout, device);
+	LoadShaderPair(floorVertexShader, L"ScrollingVertexPhong.cso", floorPixelShader, L"FloorPixelShader.cso", floorShaderInputLayout, device);
 	LoadShaderPair(uiVertexShader, L"AtlasVertexShader.cso", uiPixelShader, L"AlphaCutoffPixelShader.cso", uiShaderInputLayout, device);
 	LoadShaderPair(backgroundVertexShader, L"VertexShader.cso", backgroundPixelShader, L"PixelShader.cso", backgroundShaderInputLayout, device);
 
@@ -133,11 +152,13 @@ void AssetLoader::LoadAssets(ID3D11Device* device, ID3D11DeviceContext* deviceCo
 	cBufferDesc.StructureByteStride = 0;
 	HR(device->CreateBuffer(&cBufferDesc, NULL, &vsConstantBuffer));
 
-	playerMat = new Material(playerTex, samplerState, playerVertexShader, vsConstantBuffer, playerPixelShader, playerShaderInputLayout);
-	obstacleMat = new Material(obstacleTex, samplerState, obstacleVertexShader, vsConstantBuffer, obstaclePixelShader, obstacleShaderInputLayout);
-	floorMat = new ScrollingMaterial(floorTex, samplerState, floorVertexShader, vsConstantBuffer, floorPixelShader, floorShaderInputLayout, device, deviceContext);
-	uiMat = new AtlasMaterial(uiTex, samplerState, uiVertexShader, vsConstantBuffer, uiPixelShader, uiShaderInputLayout, device, deviceContext);
-	backgroundMat = new Material(backgroundTex, samplerState, backgroundVertexShader, vsConstantBuffer, backgroundPixelShader, backgroundShaderInputLayout);
+	playerMat = new Material(playerTex, samplerState, playerVertexShader, vsConstantBuffer, playerPixelShader, playerShaderInputLayout, NULL);
+	obstacleMat = new Material(obstacleTex, samplerState, obstacleVertexShader, vsConstantBuffer, obstaclePixelShader, obstacleShaderInputLayout, NULL);
+	obstacleTowerMat = new Material(obstacleTowerTex, samplerState, obstacleVertexShader, vsConstantBuffer, obstaclePixelShader, obstacleShaderInputLayout, NULL);
+	floorMat = new ScrollingMaterial(floorTex, samplerState, floorVertexShader, vsConstantBuffer, floorPixelShader, floorShaderInputLayout, floorNormMap, device, deviceContext);
+	scoreBackMat = new Material(black, samplerState, backgroundVertexShader, vsConstantBuffer, backgroundPixelShader, backgroundShaderInputLayout, NULL);
+	uiMat = new AtlasMaterial(uiTex, samplerState, uiVertexShader, vsConstantBuffer, uiPixelShader, uiShaderInputLayout, NULL, device, deviceContext);
+	backgroundMat = new Material(backgroundTex, samplerState, backgroundVertexShader, vsConstantBuffer, backgroundPixelShader, backgroundShaderInputLayout, NULL);
 }
 
 void AssetLoader::ReleaseAssets()
@@ -163,7 +184,9 @@ void AssetLoader::ReleaseAssets()
 
 	ReleaseMacro(playerTex);
 	ReleaseMacro(obstacleTex);
+	ReleaseMacro(obstacleTowerTex);
 	ReleaseMacro(floorTex);
+	ReleaseMacro(black);
 	ReleaseMacro(uiTex);
 	ReleaseMacro(backgroundTex);
 
@@ -172,12 +195,15 @@ void AssetLoader::ReleaseAssets()
 	delete sphere;
 	delete quad;
 	delete cube;
+	delete tower;
 	delete player;
 	delete floor;
 
 	delete playerMat;
 	delete floorMat;
 	delete obstacleMat;
+	delete obstacleTowerMat;
+	delete scoreBackMat;
 	delete uiMat;
 	delete backgroundMat;
 }

@@ -16,6 +16,7 @@ public:
 
 private:
 	static int _score;
+	static GameEntity* _scoreBack;
 	static GameEntity* _title;
 	static Atlas _titleData;
 	static GameEntity* _paused;

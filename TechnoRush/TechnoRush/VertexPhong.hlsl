@@ -35,7 +35,7 @@ VertexToPixel main(VertexShaderInput input)
 	output.color = input.color * float4(color.xyz, 1.0f);
 	float3 newNormal = float3(input.normal.xy, -input.normal.z);
 	output.normal = mul(newNormal, (float3x3)world);
-	output.uv = input.uv;
+	output.uv = float2(input.uv.x, -input.uv.y);
 
 	return output;
 }

@@ -14,10 +14,10 @@ SamplerState TrilinearSampler : register(s0);
 float4 main(PixelShaderInput input) : SV_TARGET
 {
 	// Move this to constant buffer
-	float3 lightPos = float3(0.0, 8.0, 10.0);
+	float3 lightPos = float3(0.0, 5.0, 10.0);
 	float3 lightDir = input.worldPos - lightPos;
 	float diffusePower = 5.0f;
-	float specPower = 5.0f;
+	float specPower = 2.0f;
 	float3 lightSpecColor = float3(1.0f, 1.0f, 1.0f);
 		float3 lightDiffuseColor = float3(1.0f, 1.0f, 1.0f);
 		float3 ambientLight = float3(0.1f, 0.1f, 0.1f);
@@ -41,7 +41,7 @@ float4 main(PixelShaderInput input) : SV_TARGET
 
 		float4 texSample = Texture.Sample(TrilinearSampler, input.uv);
 
-		float4 finalColor = specular + (diffuse + float4(ambientLight.xyz, 1.0f)) * texSample;
+		float4 finalColor = specular + (diffuse + float4(ambientLight.xyz, 1.0f)) * texSample * input.color;
 
 	return finalColor;
 }
