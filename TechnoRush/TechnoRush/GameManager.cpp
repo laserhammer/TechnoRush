@@ -105,6 +105,7 @@ void GameManager::Update(float dt)
 		break;
 	case GameState::Menu:
 		color = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+		_gameCamera->Resize(_gameCamera->aspectRatio(), _fov);
 		for each (GameEntity* entity in *_entities)
 		{
 			entity->color(color);
@@ -249,7 +250,7 @@ void GameManager::InitCameras()
 {
 	_gameCamera = new Camera();
 	_gameCamera->cullingMask(1);	//Can see world
-	_gameCamera->SetViewParameters(XMFLOAT3(0.0f, 1.5f, -5.0f), XMFLOAT3(0.0f, 0.0f, 100.0f), XMFLOAT3(0.0f, 1.0f, 0.0f));
+	_gameCamera->SetViewParameters(XMFLOAT3(0.0f, 1.0f, -5.0f), XMFLOAT3(0.0f, 0.0f, 100.0f), XMFLOAT3(0.0f, 1.0f, 0.0f));
 
 	_debugCamera = new Camera();
 	_debugCamera->cullingMask(MAXINT32); // Can see EVERYTHING

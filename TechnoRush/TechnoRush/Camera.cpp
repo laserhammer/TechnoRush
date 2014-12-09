@@ -90,6 +90,7 @@ void Camera::Update()
 void Camera::Resize(float aspectRatio, float fov)
 {
 	_aspectRatio = aspectRatio;
+	_fieldOfView = fov;
 	XMMATRIX P;
 	if (!_orthographic)
 	{
@@ -140,6 +141,7 @@ void Camera::RenderScene(GameEntity** entities, UINT numEntities, ID3D11RenderTa
 	}
 	if (_hdr)
 	{
+		
 		((HDRMaterial*)_pPQuad2->mat())->SetStage(FILTER);
 		((HDRMaterial*)_pPQuad2->mat())->UpdateBuffer();
 
@@ -168,9 +170,10 @@ void Camera::RenderScene(GameEntity** entities, UINT numEntities, ID3D11RenderTa
 		//deviceContext->OMSetRenderTargets(numViews, renderTargetView, NULL);
 		deviceContext->OMSetRenderTargets(numViews, &_pPRenderTargetView2, NULL);
 		_pPQuad1->Draw(deviceContext);
-
+		
 		//Now for the radial blur
-		((HDRMaterial*)_pPQuad2->mat())->SetRadialBlur(abs(_fieldOfView - 1.5707f) * 50.0f);
+		float relativeFOV = abs(_fieldOfView - 1.57079632679f);
+		((HDRMaterial*)_pPQuad2->mat())->SetRadialBlur(12500.0f * relativeFOV * relativeFOV);
 		((HDRMaterial*)_pPQuad2->mat())->UpdateBuffer();
 
 		deviceContext->OMSetRenderTargets(numViews, renderTargetView, NULL);
