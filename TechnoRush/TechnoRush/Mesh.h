@@ -26,11 +26,13 @@ public:
 	Mesh(std::vector<XMFLOAT3>* positions, std::vector<std::array<UINT, 3>>* indices, std::vector<XMFLOAT2>* uvs, std::vector<XMFLOAT3>* norms, XMFLOAT4* color, ID3D11Device *device);
 	~Mesh();
 
+	void SetVertexBuffer(ID3D11DeviceContext* deviceContext);
+
 	ID3D11Buffer* VertexBuffer();
 	//ID3D11Buffer* VertexIndexBuffer();
-	ID3D11Buffer* UvBuffer();
+	//ID3D11Buffer* UvBuffer();
 	//ID3D11Buffer* UvIndexBuffer;
-	ID3D11Buffer* NormalBuffer();
+	//ID3D11Buffer* NormalBuffer();
 	//ID3D10Buffer* NormalIndexBuffer;
 	UINT NumIndices();
 
@@ -43,9 +45,9 @@ private:
 	//Member Variables
 	ID3D11Buffer* _vertexBuffer;
 	//ID3D11Buffer* _vertIndexBuffer;
-	ID3D11Buffer* _uvBuffer;
+	//ID3D11Buffer* _uvBuffer;
 	//ID3D11Buffer* _uvIndexBuffer;
-	ID3D11Buffer* _normalBuffer;
+	//ID3D11Buffer* _normalBuffer;
 	//ID3D10Buffer* _normalIndexBuffer;
 	UINT _numIndices;
 

@@ -23,6 +23,9 @@ Material* AssetLoader::obstacleTowerMat = NULL;
 Material* AssetLoader::scoreBackMat = NULL;
 AtlasMaterial* AssetLoader::uiMat = NULL;
 Material* AssetLoader::backgroundMat = NULL;
+HDRMaterial* AssetLoader::hDRMat0 = NULL;
+HDRMaterial* AssetLoader::hDRMat1 = NULL;
+HDRMaterial* AssetLoader::hDRMat2 = NULL;
 
 ifstream AssetLoader::in_Stream;
 
@@ -35,6 +38,13 @@ ID3D11ShaderResourceView* AssetLoader::obstacleTowerTex;
 ID3D11ShaderResourceView* AssetLoader::black;
 ID3D11ShaderResourceView* AssetLoader::uiTex;
 ID3D11ShaderResourceView* AssetLoader::backgroundTex;
+ID3D11ShaderResourceView* AssetLoader::pPTex0;
+ID3D11ShaderResourceView* AssetLoader::pPTex1;
+ID3D11ShaderResourceView* AssetLoader::pPTex2;
+
+ID3D11Texture2D* AssetLoader::pPTex2D0;
+ID3D11Texture2D* AssetLoader::pPTex2D1;
+ID3D11Texture2D* AssetLoader::pPTex2D2;
 
 ID3D11VertexShader* AssetLoader::playerVertexShader;
 ID3D11PixelShader* AssetLoader::playerPixelShader;
@@ -46,6 +56,9 @@ ID3D11VertexShader* AssetLoader::uiVertexShader;
 ID3D11PixelShader* AssetLoader::uiPixelShader;
 ID3D11VertexShader* AssetLoader::backgroundVertexShader;
 ID3D11PixelShader* AssetLoader::backgroundPixelShader;
+ID3D11VertexShader* AssetLoader::hDRVertexShader;
+ID3D11PixelShader* AssetLoader::hDRPixelShader;
+ID3D11PixelShader* AssetLoader::radialBlurShader;
 
 ID3D11InputLayout* AssetLoader::playerShaderInputLayout;
 ID3D11InputLayout* AssetLoader::obstacleShaderInputLayout;
@@ -142,6 +155,8 @@ void AssetLoader::LoadAssets(ID3D11Device* device, ID3D11DeviceContext* deviceCo
 	LoadShaderPair(floorVertexShader, L"ScrollingVertexPhong.cso", floorPixelShader, L"FloorPixelShader.cso", floorShaderInputLayout, device);
 	LoadShaderPair(uiVertexShader, L"AtlasVertexShader.cso", uiPixelShader, L"AlphaCutoffPixelShader.cso", uiShaderInputLayout, device);
 	LoadShaderPair(backgroundVertexShader, L"VertexShader.cso", backgroundPixelShader, L"PixelShader.cso", backgroundShaderInputLayout, device);
+	LoadShaderPair(hDRVertexShader, L"HDRVertexShader.cso", hDRPixelShader, L"HDRPixelshader.cso", playerShaderInputLayout, device);
+	LoadShaderPair(hDRVertexShader, L"HDRVertexShader.cso", radialBlurShader, L"RadialBlurShader.cso", playerShaderInputLayout, device);
 
 	D3D11_BUFFER_DESC cBufferDesc;
 	cBufferDesc.ByteWidth = sizeof(vsData);
@@ -159,6 +174,39 @@ void AssetLoader::LoadAssets(ID3D11Device* device, ID3D11DeviceContext* deviceCo
 	scoreBackMat = new Material(black, samplerState, backgroundVertexShader, vsConstantBuffer, backgroundPixelShader, backgroundShaderInputLayout, NULL);
 	uiMat = new AtlasMaterial(uiTex, samplerState, uiVertexShader, vsConstantBuffer, uiPixelShader, uiShaderInputLayout, NULL, device, deviceContext);
 	backgroundMat = new Material(backgroundTex, samplerState, backgroundVertexShader, vsConstantBuffer, backgroundPixelShader, backgroundShaderInputLayout, NULL);
+
+	// Render to texture resources
+	// Based on code from http://www.braynzarsoft.net/index.php?p=D3D11RTT
+	D3D11_TEXTURE2D_DESC texDesc;
+	D3D11_SHADER_RESOURCE_VIEW_DESC resourceViewDesc;
+	ZeroMemory(&texDesc, sizeof(texDesc));
+	texDesc.Width = 800;
+	texDesc.Height = 600;
+	texDesc.MipLevels = 1;
+	texDesc.ArraySize = 1;
+	texDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	texDesc.SampleDesc.Count = 1;
+	texDesc.Usage = D3D11_USAGE_DEFAULT;
+	texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	texDesc.CPUAccessFlags = 0;
+	texDesc.MiscFlags = 0;
+
+	HR(device->CreateTexture2D(&texDesc, NULL, &pPTex2D0));
+	HR(device->CreateTexture2D(&texDesc, NULL, &pPTex2D1));
+	HR(device->CreateTexture2D(&texDesc, NULL, &pPTex2D2));
+
+	resourceViewDesc.Format = texDesc.Format;
+	resourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	resourceViewDesc.Texture2D.MostDetailedMip = 0;
+	resourceViewDesc.Texture2D.MipLevels = 1;
+
+	HR(device->CreateShaderResourceView(pPTex2D0, &resourceViewDesc, &pPTex0));
+	HR(device->CreateShaderResourceView(pPTex2D1, &resourceViewDesc, &pPTex1));
+	HR(device->CreateShaderResourceView(pPTex2D2, &resourceViewDesc, &pPTex2));
+
+	hDRMat0 = new HDRMaterial(pPTex0, samplerState, hDRVertexShader, vsConstantBuffer, hDRPixelShader, radialBlurShader, playerShaderInputLayout, NULL, device, deviceContext);
+	hDRMat1 = new HDRMaterial(pPTex1, samplerState, hDRVertexShader, vsConstantBuffer, hDRPixelShader, radialBlurShader, playerShaderInputLayout, NULL, device, deviceContext);
+	hDRMat2 = new HDRMaterial(pPTex2, samplerState, hDRVertexShader, vsConstantBuffer, hDRPixelShader, radialBlurShader, playerShaderInputLayout, NULL, device, deviceContext);
 }
 
 void AssetLoader::ReleaseAssets()
@@ -173,6 +221,8 @@ void AssetLoader::ReleaseAssets()
 	ReleaseMacro(uiPixelShader);
 	ReleaseMacro(backgroundVertexShader);
 	ReleaseMacro(backgroundPixelShader);
+	ReleaseMacro(hDRVertexShader);
+	ReleaseMacro(hDRPixelShader);
 
 	ReleaseMacro(vsConstantBuffer);
 
@@ -189,6 +239,13 @@ void AssetLoader::ReleaseAssets()
 	ReleaseMacro(black);
 	ReleaseMacro(uiTex);
 	ReleaseMacro(backgroundTex);
+	ReleaseMacro(pPTex0);
+	ReleaseMacro(pPTex1);
+	ReleaseMacro(pPTex2);
+
+	ReleaseMacro(pPTex2D0);
+	ReleaseMacro(pPTex2D1);
+	ReleaseMacro(pPTex2D2);
 
 	ReleaseMacro(samplerState);
 
@@ -206,6 +263,9 @@ void AssetLoader::ReleaseAssets()
 	delete scoreBackMat;
 	delete uiMat;
 	delete backgroundMat;
+	delete hDRMat0;
+	delete hDRMat1;
+	delete hDRMat2;
 }
 
 void AssetLoader::LoadMesh(std::vector<XMFLOAT3> &positions, std::vector<std::array<UINT, 3>> &indices, std::vector<XMFLOAT2> &vertTexCoord, std::vector<XMFLOAT3> &norms)

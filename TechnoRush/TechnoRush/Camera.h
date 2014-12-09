@@ -2,6 +2,8 @@
 #include <DirectXMath.h>
 #include <d3d11.h>
 
+#define DEFAULT_FOV 1.57079633f
+
 class GameEntity;
 class Camera
 {
@@ -9,12 +11,17 @@ public:
 	Camera();
 	~Camera(void);
 
-	void Resize(float aspectRatio);
-	void RenderScene(GameEntity** entities, int numEntities, ID3D11RenderTargetView* renderTargetView, ID3D11DepthStencilView* depthStencilView, ID3D11DeviceContext* deviceContext, DirectX::XMFLOAT4X4& viewData, DirectX::XMFLOAT4X4& projectionData);
+	void InitPostProcRenderTarget(ID3D11Device* device);
+
+	void Resize(float aspectRatio, float fov);
+
+	void RenderScene(GameEntity** entities, UINT numEntities, ID3D11RenderTargetView *const *renderTargetViews, UINT numViews, ID3D11DepthStencilView* depthStencilView, ID3D11DeviceContext* deviceContext, DirectX::XMFLOAT4X4& viewData, DirectX::XMFLOAT4X4& projectionData);
 
 	void SetViewParameters(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 lookAt, DirectX::XMFLOAT3 up);
 
 	void SetBackground(GameEntity* background);
+
+	void SetFullScreen(GameEntity* quad, float distance);
 
 	DirectX::XMFLOAT4 RotateToCamera(DirectX::XMFLOAT4 rotateThis);
 
@@ -35,9 +42,12 @@ public:
 	void clearStencil(bool isClearStencil);
 	bool clearRenderTarget();
 	void clearRenderTarget(bool isClearRenderTarget);
+	float aspectRatio();
 
 private:
 	void Update();
+
+	void RenderHDR(GameEntity** entities, UINT numEntities);
 
 	DirectX::XMFLOAT4X4 _view;
 	DirectX::XMFLOAT4X4 _projection;
@@ -57,9 +67,19 @@ private:
 	bool _clearDepth;
 	bool _clearStencil;
 	bool _clearRenderTarget;
+	bool _hdr;
 
 	unsigned int _cullingMask;
 
 	GameEntity* _background;
+
+	// Post-Processing
+
+	ID3D11RenderTargetView* _pPRenderTargetView0;
+	ID3D11RenderTargetView* _pPRenderTargetView1;
+	ID3D11RenderTargetView* _pPRenderTargetView2;
+	GameEntity* _pPQuad0;
+	GameEntity* _pPQuad1;
+	GameEntity* _pPQuad2;
 };
 

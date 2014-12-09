@@ -25,6 +25,7 @@ GameManager::GameManager()
 	_worldManager = new WorldManager();
 
 	_score = 0;
+	_fov = DEFAULT_FOV;
 }
 
 GameManager::~GameManager()
@@ -64,11 +65,6 @@ void GameManager::LoadData(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	(*_entities)[numObstacles] = new GameEntity(AssetLoader::playerMat, AssetLoader::player, &AssetLoader::vsData);
 	(*_entities)[numObstacles]->position(XMFLOAT4(0.0f, 0.0f, -3.0f, 0.0f));
 
-	//UI placeholder
-	//(*_entities)[numObstacles + 1] = new GameEntity(AssetLoader::obstacleMat, AssetLoader::cube, &AssetLoader::vsData);
-	//(*_entities)[numObstacles + 1]->position(XMFLOAT4(-4.5f, 3.5f, 0.0f, 0.0f));
-	//(*_entities)[numObstacles + 1]->layer(2);
-
 	//Floor
 	(*_entities)[numObstacles + 1] = new GameEntity(AssetLoader::floorMat, AssetLoader::floor, &AssetLoader::vsData);
 	(*_entities)[numObstacles + 1]->scale(XMFLOAT4(100.0f, 1.0f, 100.0f, 0.0f));
@@ -80,6 +76,7 @@ void GameManager::LoadData(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	_gameCamera->SetBackground((*_entities)[numObstacles + 2]);
 
 	UiManager::InitUi(_uiCamera);
+	_gameCamera->InitPostProcRenderTarget(device);
 }
 
 void GameManager::Update(float dt)
@@ -92,11 +89,13 @@ void GameManager::Update(float dt)
 	UpdateFSM();
 	XMFLOAT4 color;
 	float speed = abs(_worldManager->getSpeed());
+	_fov = DEFAULT_FOV - speed * 0.1f;
 	switch (_currentGameState)
 	{
 	case GameState::Play:
 		_worldManager->Update(dt);
 		color = GetColorFromSpeed(speed - 0.04f);
+		_gameCamera->Resize(_gameCamera->aspectRatio(), _fov);
 		_score += speed;
 		for each (GameEntity* entity in *_entities)
 		{
@@ -127,7 +126,7 @@ void GameManager::Update(float dt)
 	default:
 		break;
 	}
-	UiManager::SetScore(_score);
+	UiManager::SetScore((int)_score);
 	UiManager::Update(_currentGameState);
 }
 
@@ -139,26 +138,26 @@ Camera* GameManager::mainCamera()
 		return _gameCamera;
 }
 
-void GameManager::RenderScene(ID3D11RenderTargetView* renderTargetView, ID3D11DepthStencilView* depthStencilView, ID3D11DeviceContext* deviceContext)
+void GameManager::RenderScene(ID3D11RenderTargetView *const *renderTargetView, ID3D11DepthStencilView* depthStencilView, ID3D11DeviceContext* deviceContext)
 {
 	int numEntities = _entities->size();
 	Mesh* mesh = AssetLoader::player;
 	if (_debugActive)
 	{
-		_debugCamera->RenderScene(&(*_entities)[0], numEntities, renderTargetView, depthStencilView, deviceContext, AssetLoader::vsData.view, AssetLoader::vsData.projection);
+		_debugCamera->RenderScene(&(*_entities)[0], numEntities, renderTargetView, 1, depthStencilView, deviceContext, AssetLoader::vsData.view, AssetLoader::vsData.projection);
 	}
 	else
 	{
-		_gameCamera->RenderScene(&(*_entities)[0], numEntities, renderTargetView, depthStencilView, deviceContext, AssetLoader::vsData.view, AssetLoader::vsData.projection);
+		_gameCamera->RenderScene(&(*_entities)[0], numEntities, renderTargetView, 1,  depthStencilView, deviceContext, AssetLoader::vsData.view, AssetLoader::vsData.projection);
 		UiManager::DrawUi(renderTargetView, depthStencilView, deviceContext, AssetLoader::vsData.view, AssetLoader::vsData.projection);
 	}
 }
 
 void GameManager::Resize(float aspectRatio)
 {
-	_debugCamera->Resize(aspectRatio);
-	_gameCamera->Resize(aspectRatio);
-	_uiCamera->Resize(aspectRatio);
+	_debugCamera->Resize(aspectRatio, DEFAULT_FOV);
+	_gameCamera->Resize(aspectRatio, _fov);
+	_uiCamera->Resize(aspectRatio, DEFAULT_FOV);
 }
 
 // Private Member functions
@@ -238,7 +237,7 @@ void GameManager::ToggleDebug()
 	XMFLOAT3 pos = XMFLOAT3(_gameCamera->position().x, _gameCamera->position().y, _gameCamera->position().z);
 	// Set to (approximately) the gameCamera's current position (which shouldn't change)
 	DebugCameraController::SetPosition(pos);
-	DebugCameraController::SetOrientation(-0.465, 0.0);
+	DebugCameraController::SetOrientation(-0.465f, 0.0f);
 }
 
 void GameManager::QuitGame()
@@ -275,19 +274,19 @@ XMFLOAT4 GameManager::GetColorFromSpeed(float speed)
 
 	if (speed < 0)
 	{
-		r = 0.412 - (speed / -0.04) * (1.0);
+		r = 0.412f - (speed / -0.04f) * (1.0f);
 		r = r <= 0.0f ? 0.0f : r;
-		g = 0.0;
-		b = 0.043 - (speed / -0.04) * (1.0);
+		g = 0.0f;
+		b = 0.043f - (speed / -0.04f) * (1.0f);
 		b = b <= 0.0f ? 0.0f : b;
 	}
 	else
 	{
-		r = 0.412 + (speed / 0.11) * (.196 - 0.412);
+		r = 0.412f + (speed / 0.11f) * (.196f - 0.412f);
 		r = r >= 1.0f ? 1.0f : r;
-		g = 0.0 + (speed / 0.11) * (0.807 - 0.0);
+		g = 0.0f + (speed / 0.11f) * (0.807f - 0.0f);
 		g = g >= 1.0f ? 1.0f : g;
-		b = 0.043 + (speed / 0.11) * (1.0 - 0.043);
+		b = 0.043f + (speed / 0.11f) * (1.0f - 0.043f);
 		b = b >= 1.0f ? 1.0f : b;
 	}
 	return XMFLOAT4(r, g, b, 1.0f);

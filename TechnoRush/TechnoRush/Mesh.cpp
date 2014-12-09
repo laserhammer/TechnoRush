@@ -6,8 +6,8 @@
 
 Mesh::Mesh(std::vector<XMFLOAT3>* positions, std::vector<std::array<UINT, 3>>* indices, std::vector<XMFLOAT2>* uvs, std::vector<XMFLOAT3>* norms, XMFLOAT4* color, ID3D11Device *device)
 {
-	GenerateBuffers(positions, indices, uvs, norms, color, device);
 	_numIndices = indices->size();
+	GenerateBuffers(positions, indices, uvs, norms, color, device);
 }
 
 
@@ -15,26 +15,36 @@ Mesh::~Mesh()
 {
 	ReleaseMacro(_vertexBuffer);
 	//ReleaseMacro(_vertIndexBuffer);
-	ReleaseMacro(_vertexBuffer);
+	//ReleaseMacro(_vertexBuffer);
 	//ReleaseMacro(_vertIndexBuffer);
-	ReleaseMacro(_vertexBuffer);
+	//ReleaseMacro(_vertexBuffer);
 	//ReleaseMacro(_vertIndexBuffer);
+}
+
+void Mesh::SetVertexBuffer(ID3D11DeviceContext* deviceContext)
+{
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+	ID3D11Buffer *vertBuffer = _vertexBuffer;
+	//ID3D11Buffer *indexBuffer = _mesh->IndexBuffer();
+	deviceContext->IASetVertexBuffers(0, 1, &vertBuffer, &stride, &offset);
+	//deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 }
 
 ID3D11Buffer* Mesh::VertexBuffer() { return _vertexBuffer; }
 //ID3D11Buffer* VertexIndexBuffer();
-ID3D11Buffer* Mesh::UvBuffer() { return _uvBuffer; }
+//ID3D11Buffer* Mesh::UvBuffer() { return _uvBuffer; }
 //ID3D11Buffer* UvIndexBuffer;
-ID3D11Buffer* Mesh::NormalBuffer() { return _normalBuffer; }
+//ID3D11Buffer* Mesh::NormalBuffer() { return _normalBuffer; }
 //ID3D10Buffer* NormalIndexBuffer;
 UINT Mesh::NumIndices() { return _numIndices; }
 
 void Mesh::GenerateBuffers(std::vector<XMFLOAT3>* positions, std::vector<std::array<UINT, 3>>* indices, std::vector<XMFLOAT2>* uvs, std::vector<XMFLOAT3>* norms, XMFLOAT4* color, ID3D11Device *device)
 {
-	_numIndices = indices->size();
+	//int numIndices = indices->size();
 	std::vector<Vertex> vertices = std::vector<Vertex>();
 	vertices.resize(_numIndices);
-	for (int i = 0; i < _numIndices; ++i)
+	for (unsigned int i = 0; i < _numIndices; ++i)
 	{
 		//Vertex vert;
 		//vert.Position = positions->at((*indices)[i][0] - 1);

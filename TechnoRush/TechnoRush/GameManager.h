@@ -27,7 +27,7 @@ public:
 
 	Camera* mainCamera();
 
-	void RenderScene(ID3D11RenderTargetView* renderTargetView, ID3D11DepthStencilView* depthStencilView, ID3D11DeviceContext* deviceContext);
+	void RenderScene(ID3D11RenderTargetView *const *renderTargetView, ID3D11DepthStencilView* depthStencilView, ID3D11DeviceContext* deviceContext);
 
 	void Resize(float aspectRatio);
 	GameState getGameState();
@@ -49,6 +49,7 @@ private:
 
 	bool _debugActive;
 	float _score;
+	float _fov;
 
 	WorldManager* _worldManager;
 	std::vector<GameEntity*>* _entities;

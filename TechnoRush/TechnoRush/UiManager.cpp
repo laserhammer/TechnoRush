@@ -21,7 +21,7 @@ void UiManager::InitUi(Camera* uiCamera)
 	_paused->rotation(_uiCamera->RotateToCamera(XMFLOAT4(0.0f, 1.0f, 0.0f, 0.f)));
 	_paused->scale(XMFLOAT4(20.0f * 0.6f, 20.0f * 0.075f, 1.0f, 0.0f));
 	_pausedData.scale = DirectX::XMFLOAT2(0.6f, 0.075f);
-	_pausedData.displacement = DirectX::XMFLOAT2(0.016, .09);
+	_pausedData.displacement = DirectX::XMFLOAT2(0.016f, .09f);
 
 	//Score Background
 	_scoreBack = new GameEntity(AssetLoader::scoreBackMat, AssetLoader::quad, &AssetLoader::vsData);
@@ -66,18 +66,18 @@ void UiManager::Update(GameState currentState)
 	_paused->Update(1.0f);
 	_scoreBack->Update(1.0f);
 }
-void UiManager::DrawUi(ID3D11RenderTargetView* renderTargetView, ID3D11DepthStencilView* depthStencilView, ID3D11DeviceContext* deviceContext, DirectX::XMFLOAT4X4& viewData, DirectX::XMFLOAT4X4& projectionData)
+void UiManager::DrawUi(ID3D11RenderTargetView *const *renderTargetView, ID3D11DepthStencilView* depthStencilView, ID3D11DeviceContext* deviceContext, DirectX::XMFLOAT4X4& viewData, DirectX::XMFLOAT4X4& projectionData)
 {
 	((AtlasMaterial*)(_title->mat()))->SetScale(_titleData.scale);
 	((AtlasMaterial*)(_title->mat()))->SetDisplacement(_titleData.displacement);
 	((AtlasMaterial*)(_title->mat()))->UpdateBuffer();
-	_uiCamera->RenderScene(&_title, 1, renderTargetView, depthStencilView, deviceContext, viewData, projectionData);
+	_uiCamera->RenderScene(&_title, 1, renderTargetView, 1, depthStencilView, deviceContext, viewData, projectionData);
 
 	((AtlasMaterial*)(_paused->mat()))->SetScale(_pausedData.scale);
 	((AtlasMaterial*)(_paused->mat()))->SetDisplacement(_pausedData.displacement);
 	((AtlasMaterial*)(_paused->mat()))->UpdateBuffer();
-	_uiCamera->RenderScene(&_paused, 1, renderTargetView, depthStencilView, deviceContext, viewData, projectionData);
-	_uiCamera->RenderScene(&_scoreBack, 1, renderTargetView, depthStencilView, deviceContext, viewData, projectionData);
+	_uiCamera->RenderScene(&_paused, 1, renderTargetView, 1, depthStencilView, deviceContext, viewData, projectionData);
+	_uiCamera->RenderScene(&_scoreBack, 1, renderTargetView, 1, depthStencilView, deviceContext, viewData, projectionData);
 }
 void UiManager::SetScore(int score)
 {

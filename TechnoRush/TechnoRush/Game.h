@@ -50,37 +50,10 @@ public:
 	void OnMouseUp(WPARAM btnState, int x, int y);
 	void OnMouseMove(WPARAM btnState, int x, int y);
 
-	
-
-private:
-	// Initialization for our "game" demo
-	void CreateGeometryBuffers();
-	void LoadShadersAndInputLayout();
-	void LoadTexture(const wchar_t* path);
-	void CreateInputLayoutDescFromVertexShaderSignature(ID3DBlob* shaderBlob, ID3D11InputLayout** inputLayout);
 private:
 
 	std::vector<GameEntity*> entities;
 
-	//Camera* camera;
-
-	// Our basic shaders for this example
-	//ID3D11PixelShader* pixelShader;
-	//ID3D11VertexShader* vertexShader;
-
-	// Texture data
-	//ID3D11Resource* texture;
-	//ID3D11ShaderResourceView* textureView;
-	//ID3D11SamplerState* samplerState;
-	//Material* material;
-
-	// A few more odds and ends we'll need
-	//ID3D11InputLayout* inputLayout;
-	//ID3D11Buffer* vsConstantBuffer;
-	//VSConstantBufferLayout dataToSendToVSConstantBuffer;
-
-	// The matrices to go from model space
-	// to screen space
 	XMFLOAT4X4 viewMatrix;
 	XMFLOAT4X4 projectionMatrix;
 
@@ -89,5 +62,4 @@ private:
 	POINT prevMousePos;
 
 	GameManager* gameManager;
-	//WorldManager* worldManager;
 };

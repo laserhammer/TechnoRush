@@ -82,17 +82,17 @@ void InputManager::Update()
 	pescKey = escKey;
 	pspaceKey = spaceKey;
 
-	wKey = GetKeyState(0x57) & 0x80;
-	aKey = GetKeyState(0x41) & 0x80;
-	sKey = GetKeyState(0x53) & 0x80;
-	dKey = GetKeyState(0x44) & 0x80;
-	shiftKey = GetKeyState(0x10) & 0x80;
-	ctrlKey = GetKeyState(0x11) & 0x80;
-	uArrowKey = GetKeyState(0x26) & 0x80;
-	dArrowKey = GetKeyState(0x28) & 0x80;
-	lArrowKey = GetKeyState(0x25) & 0x80;
-	rArrowKey = GetKeyState(0x27) & 0x80;
-	returnKey = GetKeyState(0X0D) & 0X80;
-	escKey = GetKeyState(0x1B) & 0X80;
-	spaceKey = GetKeyState(0x20) & 0x80;
+	wKey = (GetKeyState(0x57) & 0x80) > 0;
+	aKey = (GetKeyState(0x41) & 0x80) > 0;
+	sKey = (GetKeyState(0x53) & 0x80) > 0;
+	dKey = (GetKeyState(0x44) & 0x80) > 0;
+	shiftKey = (GetKeyState(0x10) & 0x80) > 0;
+	ctrlKey = (GetKeyState(0x11) & 0x80) > 0;
+	uArrowKey = (GetKeyState(0x26) & 0x80) > 0;
+	dArrowKey = (GetKeyState(0x28) & 0x80) > 0;
+	lArrowKey = (GetKeyState(0x25) & 0x80) > 0;
+	rArrowKey = (GetKeyState(0x27) & 0x80) > 0;
+	returnKey = (GetKeyState(0X0D) & 0X80) > 0;
+	escKey = (GetKeyState(0x1B) & 0X80) > 0;
+	spaceKey = (GetKeyState(0x20) & 0x80) > 0;
 }

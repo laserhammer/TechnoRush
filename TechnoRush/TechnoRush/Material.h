@@ -7,6 +7,8 @@
 #include <crtdbg.h>
 #endif
 
+struct VSConstantBufferLayout;
+
 class Material
 {
 public:
@@ -15,6 +17,8 @@ public:
 		ID3D11VertexShader* vertexShader, ID3D11Buffer* vsConstantBuffer,
 		ID3D11PixelShader* pixelShader, ID3D11InputLayout* inputLayout, ID3D11ShaderResourceView* normalMap);
 	~Material();
+
+	void SetupShaderResources(ID3D11DeviceContext* deviceContext, VSConstantBufferLayout* perModelData);
 
 	// Public Member fuctions
 	ID3D11ShaderResourceView* textureView();
@@ -27,7 +31,7 @@ public:
 private:
 	// Member functions
 	//void loadTexture(const wchar_t* path, ID3D11Device* device, ID3D11DeviceContext* deviceContext);
-private:
+protected:
 
 	// Member variables
 	ID3D11ShaderResourceView* _textureView;

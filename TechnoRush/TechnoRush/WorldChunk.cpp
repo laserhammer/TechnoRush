@@ -26,12 +26,24 @@ void WorldChunk::update(XMFLOAT4 vel, float dt)
 	position.x += vel.x;
 	position.y += vel.y;
 	position.z += vel.z;
-	for (int i = 0; i < Obst.size(); i++)
+	unsigned int size = Obst.size();
+	for (unsigned int i = 0; i < size; i++)
 	{
 		obstPos = Obst[i]->position();
 		obstPos.x += vel.x;
 		obstPos.y += vel.y;
 		obstPos.z += vel.z;
+		
+		//Cover up the obstacle popping in
+		if (obstPos.z > 60.0f)
+		{
+			obstPos.y = 7.5f - 0.125f * obstPos.z;
+		}
+		else
+		{
+			obstPos.y = 0.0f;
+		}
+
 		Obst[i]->position(obstPos);
 		Obst[i]->Update(dt);
 	}

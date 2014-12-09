@@ -35,11 +35,11 @@ void WorldManager::Update(float dt)
 	//use input to set acceleration
 	if (InputManager::rArrowKey)
 	{
-		accel.x += -0.12*dt;
+		accel.x += -0.12f*dt;
 	}
 	else if (InputManager::lArrowKey)
 	{
-		accel.x += 0.12*dt;
+		accel.x += 0.12f*dt;
 	}
 	
 	accel.z += -0.08f*dt;
@@ -54,21 +54,22 @@ void WorldManager::Update(float dt)
 	}
 
 	//give the player a speed boost if they are flying close to the obstacles
-	for (int i = 0; i < entities.size(); i++)
+	unsigned int size = entities.size();
+	for (unsigned int i = 0; i < size; i++)
 	{
 		if (entities[i]->position().z - 1.25f < 2.0f && entities[i]->position().z + 1.25f > -2.0f)
 		{
 			if (entities[i]->position().x - 1.25f < 3.0f && entities[i]->position().x + 1.25f > -3.0f)
 			{
-				accel.z -=  sqrt((entities[i]->position().x * entities[i]->position().x) + (entities[i]->position().z * entities[i]->position().z))*0.0002;
+				accel.z -=  sqrt((entities[i]->position().x * entities[i]->position().x) + (entities[i]->position().z * entities[i]->position().z))*0.0002f;
 			}
 		}
 	}
 
 	//limit max acceleration
-	if (accel.z < -0.16)
+	if (accel.z < -0.16f)
 	{
-		accel.z = -0.16;
+		accel.z = -0.16f;
 	}
 
 	//add acceleration to velocity
@@ -124,8 +125,8 @@ void WorldManager::Update(float dt)
 void WorldManager::getEntities(std::vector<GameEntity*>* _entities)
 {
 	entities = *_entities;
-
-	for (int i = 0; i < entities.size(); i++)
+	unsigned int size = entities.size();
+	for (unsigned int i = 0; i < size; i++)
 	{
 		worldChunks[i % 9]->Obst.push_back(entities[i]);
 	}
@@ -139,7 +140,8 @@ void WorldManager::getEntities(std::vector<GameEntity*>* _entities)
 void WorldManager::checkCollision()
 {
 	//check to see if any obstacle has collided with the player
-	for (int i = 0; i < entities.size(); i++)
+	unsigned int size = entities.size();
+	for (unsigned int i = 0; i < size; i++)
 	{
 		if (entities[i]->position().z - 1.25f < -1.75f && entities[i]->position().z + 1.25f > -2.0f)
 		{

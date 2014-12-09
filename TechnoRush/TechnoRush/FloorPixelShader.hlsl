@@ -27,7 +27,7 @@ float4 main(PixelShaderInput input) : SV_TARGET
 		float3 outVec = normalize(camPos) - normalize(input.worldPos);
 
 		// Diffuse
-		float3 normal = NormalMap.Sample(TrilinearSampler, input.uv);//normalize(input.normal);
+		float3 normal = NormalMap.Sample(TrilinearSampler, input.uv).xyz;//normalize(input.normal);
 		float NdotL = dot(normal, -lightDir);
 	float intensity = saturate(NdotL);
 

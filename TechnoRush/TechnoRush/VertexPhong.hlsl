@@ -30,7 +30,7 @@ VertexToPixel main(VertexShaderInput input)
 
 	matrix worldViewProj = mul(mul(world, view), projection);
 	output.position = mul(float4(input.position, 1.0f), worldViewProj);
-	output.worldPos = output.position;
+	output.worldPos = output.position.xyz;
 
 	output.color = input.color * float4(color.xyz, 1.0f);
 	float3 newNormal = float3(input.normal.xy, -input.normal.z);

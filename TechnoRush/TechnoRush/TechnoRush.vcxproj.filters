@@ -72,6 +72,9 @@
     <ClInclude Include="AtlasMaterial.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="HDRMaterial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectXGame.cpp">
@@ -128,6 +131,9 @@
     <ClCompile Include="AtlasMaterial.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="HDRMaterial.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\PixelShader.hlsl">
@@ -158,6 +164,15 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="IlluminatiPixelPhong.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="HDRVertexShader.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="HDRPixelShader.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="RadialBlurShader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

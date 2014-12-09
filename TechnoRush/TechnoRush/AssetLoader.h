@@ -5,6 +5,7 @@
 #include "Material.h"
 #include "ScrollingMaterial.h"
 #include "AtlasMaterial.h"
+#include "HDRMaterial.h"
 #include "DirectXGame.h"
 #include "Mesh.h"
 
@@ -43,8 +44,15 @@ public:
 	static Material* scoreBackMat;
 	static AtlasMaterial* uiMat;
 	static Material* backgroundMat;
+	static HDRMaterial* hDRMat0;
+	static HDRMaterial* hDRMat1;
+	static HDRMaterial* hDRMat2;
 
 	static VSConstantBufferLayout vsData;
+
+	static ID3D11Texture2D* pPTex2D0;
+	static ID3D11Texture2D* pPTex2D1;
+	static ID3D11Texture2D* pPTex2D2;
 
 private:
 
@@ -58,6 +66,9 @@ private:
 	static ID3D11ShaderResourceView* black;
 	static ID3D11ShaderResourceView* uiTex;
 	static ID3D11ShaderResourceView* backgroundTex;
+	static ID3D11ShaderResourceView* pPTex0;
+	static ID3D11ShaderResourceView* pPTex1;
+	static ID3D11ShaderResourceView* pPTex2;
 
 	static ID3D11VertexShader* playerVertexShader;
 	static ID3D11PixelShader* playerPixelShader;
@@ -69,6 +80,9 @@ private:
 	static ID3D11PixelShader* uiPixelShader;
 	static ID3D11VertexShader* backgroundVertexShader;
 	static ID3D11PixelShader* backgroundPixelShader;
+	static ID3D11VertexShader* hDRVertexShader;
+	static ID3D11PixelShader* hDRPixelShader;
+	static ID3D11PixelShader* radialBlurShader;
 
 	static ID3D11InputLayout* playerShaderInputLayout;
 	static ID3D11InputLayout* obstacleShaderInputLayout;
@@ -81,6 +95,5 @@ private:
 	static void LoadShaderPair(ID3D11VertexShader* &vertexShader, LPCWSTR vertexShaderPath, ID3D11PixelShader* &pixelShader, LPCWSTR pixelShaderPath, ID3D11InputLayout* &inputLayout, ID3D11Device* device);
 	static void CreateInputLayoutDescFromVertexShaderSignature(ID3DBlob* shaderBlob, ID3D11InputLayout** inputLayout, ID3D11Device* device);
 	static void LoadMesh(std::vector<XMFLOAT3> &positions, std::vector<std::array<UINT, 3>> &indices, std::vector<XMFLOAT2> &vertTexCoord, std::vector<XMFLOAT3> &norms);
-	//static Material* LoadMaterial(const char* filePath, ID3D11ShaderResourceView* textureView, ID3D11SamplerState* samplerState, ID3D11VertexShader* vertexShader, );
 };
 

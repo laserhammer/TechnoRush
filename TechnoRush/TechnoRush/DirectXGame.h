@@ -94,7 +94,8 @@ protected:
 	ID3D11DeviceContext* deviceContext;
 	IDXGISwapChain* swapChain;
 	ID3D11Texture2D* depthStencilBuffer;
-	ID3D11RenderTargetView* renderTargetView;
+	ID3D11RenderTargetView* backBufferRenderTargetView[1];
+	//ID3D11RenderTargetView* pPRenderTargetView[3];
 	ID3D11DepthStencilView* depthStencilView;
 	D3D11_VIEWPORT viewport;
 	D3D_DRIVER_TYPE driverType;

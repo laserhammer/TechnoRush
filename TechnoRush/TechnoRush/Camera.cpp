@@ -1,6 +1,8 @@
 
 #include "Camera.h"
 #include "GameEntity.h"
+#include "AssetLoader.h"
+#include "HDRMaterial.h"
 
 
 using namespace DirectX;
@@ -29,12 +31,46 @@ Camera::Camera(void)
 	_clearStencil = true;
 	_clearRenderTarget = true;
 
+	_hdr = false;
+
 	Update();
 }
 
 
 Camera::~Camera(void)
 {
+	ReleaseMacro(_pPRenderTargetView0);
+	ReleaseMacro(_pPRenderTargetView1);
+	ReleaseMacro(_pPRenderTargetView2);
+	delete _pPQuad0;
+	delete _pPQuad1;
+	delete _pPQuad2;
+}
+
+void Camera::InitPostProcRenderTarget(ID3D11Device* device)
+{
+	_pPQuad0 = new GameEntity(AssetLoader::hDRMat0, AssetLoader::quad, &AssetLoader::vsData);
+	SetFullScreen(_pPQuad0, _far * 0.95f);
+	_pPQuad0->Update(1.0f);
+
+	_pPQuad1 = new GameEntity(AssetLoader::hDRMat1, AssetLoader::quad, &AssetLoader::vsData);
+	SetFullScreen(_pPQuad1, _far * 0.95f);
+	_pPQuad1->Update(1.0f);
+
+	_pPQuad2 = new GameEntity(AssetLoader::hDRMat2, AssetLoader::quad, &AssetLoader::vsData);
+	SetFullScreen(_pPQuad2, _far * 0.95f);
+	_pPQuad2->Update(1.0f);
+
+	D3D11_RENDER_TARGET_VIEW_DESC renderTargetDesc;
+	renderTargetDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	renderTargetDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	renderTargetDesc.Texture2D.MipSlice = 0;
+
+	HR(device->CreateRenderTargetView(AssetLoader::pPTex2D0, &renderTargetDesc, &_pPRenderTargetView0));
+	HR(device->CreateRenderTargetView(AssetLoader::pPTex2D1, &renderTargetDesc, &_pPRenderTargetView1));
+	HR(device->CreateRenderTargetView(AssetLoader::pPTex2D2, &renderTargetDesc, &_pPRenderTargetView2));
+
+	_hdr = true;
 }
 
 void Camera::Update()
@@ -51,29 +87,43 @@ void Camera::Update()
 	XMStoreFloat4(&_forward, forward);
 }
 
-void Camera::Resize(float aspectRatio)
+void Camera::Resize(float aspectRatio, float fov)
 {
 	_aspectRatio = aspectRatio;
 	XMMATRIX P;
 	if (!_orthographic)
 	{
-		P = XMMatrixPerspectiveFovLH(_fieldOfView, _aspectRatio, _near, _far);
+		P = XMMatrixPerspectiveFovLH(fov, _aspectRatio, _near, _far);
 	}
 	else
 	{
 		P = XMMatrixOrthographicLH(_width,_width / _aspectRatio, _near, _far);
 	}
 	XMStoreFloat4x4(&_projection, XMMatrixTranspose(P));
+	if (_background)
+		SetFullScreen(_background, _far * 0.95f);
 }
 
-void Camera::RenderScene(GameEntity** entities, int numEntities, ID3D11RenderTargetView* renderTargetView, ID3D11DepthStencilView* depthStencilView, ID3D11DeviceContext* deviceContext, XMFLOAT4X4& viewData, XMFLOAT4X4& projectionData)
+void Camera::RenderScene(GameEntity** entities, UINT numEntities, ID3D11RenderTargetView *const *renderTargetView, UINT numViews, ID3D11DepthStencilView* depthStencilView, ID3D11DeviceContext* deviceContext, XMFLOAT4X4& viewData, XMFLOAT4X4& projectionData)
 {
 	viewData = _view;
 	projectionData = _projection;
 
+	ID3D11RenderTargetView *const *RTV;
+	// Bind the render target and depthstencil buffer
+	if (_hdr)
+		RTV = &_pPRenderTargetView0;
+	else
+		RTV = renderTargetView;
+
+	deviceContext->OMSetRenderTargets(numViews, RTV, depthStencilView);
+
 	// Clear the buffer
-	if (_clearRenderTarget)
-		deviceContext->ClearRenderTargetView(renderTargetView, _clearColor);
+	for (UINT i = 0; i < numViews; ++i)
+	{
+		if (_clearRenderTarget)
+			deviceContext->ClearRenderTargetView(RTV[i], _clearColor);
+	}
 	unsigned int clearDepth = _clearDepth * D3D11_CLEAR_DEPTH;
 	unsigned int clearStencil = _clearStencil * D3D11_CLEAR_STENCIL;
 	deviceContext->ClearDepthStencilView(
@@ -82,10 +132,49 @@ void Camera::RenderScene(GameEntity** entities, int numEntities, ID3D11RenderTar
 		1.0f,
 		0);
 
-	for(int i = 0; i < numEntities; ++i)
+	
+	for (UINT i = 0; i < numEntities; ++i)
 	{
 		if (_cullingMask & entities[i]->layer())	//Check the layer of the object against the cullling mask
 			entities[i]->Draw(deviceContext);
+	}
+	if (_hdr)
+	{
+		((HDRMaterial*)_pPQuad2->mat())->SetStage(FILTER);
+		((HDRMaterial*)_pPQuad2->mat())->UpdateBuffer();
+
+		deviceContext->OMSetRenderTargets(numViews, &_pPRenderTargetView1, NULL);
+		deviceContext->ClearDepthStencilView(depthStencilView, 3, 1.0f, 0);
+		_pPQuad0->Draw(deviceContext);
+
+		((HDRMaterial*)_pPQuad2->mat())->SetStage(HORIZONTAL_BLUR);
+		((HDRMaterial*)_pPQuad2->mat())->UpdateBuffer();
+		
+		deviceContext->OMSetRenderTargets(numViews, &_pPRenderTargetView2, NULL);
+		_pPQuad1->Draw(deviceContext);
+
+		((HDRMaterial*)_pPQuad2->mat())->SetStage(VERTICAL_BLUR);
+		((HDRMaterial*)_pPQuad2->mat())->UpdateBuffer();
+
+		ID3D11ShaderResourceView* baseImage = _pPQuad0->mat()->textureView();
+		deviceContext->PSSetShaderResources(2, 1, &baseImage);
+
+		deviceContext->OMSetRenderTargets(numViews, &_pPRenderTargetView1, NULL);
+		_pPQuad2->Draw(deviceContext);
+
+		((HDRMaterial*)_pPQuad2->mat())->SetStage(MERGE);
+		((HDRMaterial*)_pPQuad2->mat())->UpdateBuffer();
+
+		//deviceContext->OMSetRenderTargets(numViews, renderTargetView, NULL);
+		deviceContext->OMSetRenderTargets(numViews, &_pPRenderTargetView2, NULL);
+		_pPQuad1->Draw(deviceContext);
+
+		//Now for the radial blur
+		((HDRMaterial*)_pPQuad2->mat())->SetRadialBlur(abs(_fieldOfView - 1.5707f) * 50.0f);
+		((HDRMaterial*)_pPQuad2->mat())->UpdateBuffer();
+
+		deviceContext->OMSetRenderTargets(numViews, renderTargetView, NULL);
+		_pPQuad2->Draw(deviceContext);
 	}
 }
 
@@ -101,43 +190,28 @@ void Camera::SetBackground(GameEntity* background)
 {
 	_background = background;
 
+	SetFullScreen(_background, _far * 0.95f);
+}
+
+void Camera::SetFullScreen(GameEntity* quad, float distance)
+{
 	//Set the background's position to the far plane
 	XMVECTOR pos = XMLoadFloat4(&_position);
-	//XMVECTOR lookAt = XMLoadFloat4(&_lookAt);
-	XMVECTOR forward = XMLoadFloat4(&_forward);//XMVector4Normalize(-pos + lookAt);
-	XMVECTOR newPosVec = pos + (forward *_far * .95);
+	XMVECTOR forward = XMLoadFloat4(&_forward);
+	XMVECTOR newPosVec = pos + (forward * distance);
 	XMFLOAT4 newQuadPos;
 	XMStoreFloat4(&newQuadPos, newPosVec);
-	_background->position(newQuadPos);
+	quad->position(newQuadPos);
 
-	//Rotate the background to face the camera
-	//We assume that the quad starts out facing up
-	/*
-	XMFLOAT4 quadForward = XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f);
-	XMVECTOR quadForWardVec = XMLoadFloat4(&quadForward);
-	//Need to rotate the quad's forward to match the opposite of the camera's forward
-	//First get the cross product of the two vectors
-	XMVECTOR axis = XMVector3Cross(quadForWardVec, -forward);
-	//Secondly, find the angle between the two vectors
-	XMVECTOR angleVec = XMVector4AngleBetweenVectors(quadForWardVec, -forward);
-	float angle;
-	XMStoreFloat(&angle, angleVec);
-	//Use the axis and the angle to create a rotation quaternion
-	XMVECTOR rot = XMQuaternionRotationRollPitchYawFromVector(angle * axis);
-
-	XMFLOAT4 quadRot;
-	XMStoreFloat4(&quadRot, rot);
-	_background->rotation(quadRot);
-	*/
-	_background->rotation(RotateToCamera(XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f)));
+	quad->rotation(RotateToCamera(XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f)));
 
 	//Now scale the background
 	//The mesh starts out with a width and height of 1
 	//So therefore the scale values should be set to the desired with and height
 	//The width and height are based on the current view frustum
-	float yScale = 2 * _far * tanf(_fieldOfView / 2);
+	float yScale = 2 * _far * tanf(_fieldOfView / 2.0f);
 	float xScale = yScale * _aspectRatio;
-	_background->scale(XMFLOAT4(xScale, yScale, 1.0f, 0.0f));
+	quad->scale(XMFLOAT4(xScale, yScale, 1.0f, 0.0f));
 }
 
 XMFLOAT4 Camera::RotateToCamera(DirectX::XMFLOAT4 rotateThis)
@@ -177,3 +251,4 @@ bool Camera::clearStencil() { return _clearStencil; }
 void Camera::clearStencil(bool isClearStencil) { _clearStencil = isClearStencil; }
 bool Camera::clearRenderTarget() { return _clearRenderTarget; }
 void Camera::clearRenderTarget(bool isClearRenderTarget) { _clearRenderTarget = isClearRenderTarget; }
+float Camera::aspectRatio() { return _aspectRatio; }

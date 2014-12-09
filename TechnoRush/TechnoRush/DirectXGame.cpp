@@ -53,7 +53,7 @@ DirectXGame::DirectXGame(HINSTANCE hInstance)
 	deviceContext(0),
 	swapChain(0),
 	depthStencilBuffer(0),
-	renderTargetView(0),
+	backBufferRenderTargetView(),
 	depthStencilView(0)
 {
 	// Zero out the viewport struct
@@ -67,7 +67,10 @@ DirectXGame::DirectXGame(HINSTANCE hInstance)
 DirectXGame::~DirectXGame(void)
 {
 	// Release the DX stuff
-	ReleaseMacro(renderTargetView);
+	ReleaseMacro(backBufferRenderTargetView[0]);
+	//ReleaseMacro(pPRenderTargetView[0]);
+	//ReleaseMacro(pPRenderTargetView[1]);
+	//ReleaseMacro(pPRenderTargetView[2]);
 	ReleaseMacro(depthStencilView);
 	ReleaseMacro(swapChain);
 	ReleaseMacro(depthStencilBuffer);
@@ -178,19 +181,7 @@ bool DirectXGame::InitDirect3D()
 
 	// Create the device and swap chain and determine the supported feature level
 	featureLevel = D3D_FEATURE_LEVEL_9_1; // Will be overwritten by next line
-	HRESULT hr = D3D11CreateDeviceAndSwapChain(
-		0,
-		driverType,
-		0,
-		createDeviceFlags,
-		0,
-		0,
-		D3D11_SDK_VERSION,
-		&swapChainDesc,
-		&swapChain,
-		&device,
-		&featureLevel,
-		&deviceContext);
+	HRESULT hr = D3D11CreateDeviceAndSwapChain(0, driverType, 0, createDeviceFlags, 0, 0, D3D11_SDK_VERSION, &swapChainDesc, &swapChain, &device, &featureLevel, &deviceContext);
 
 	// Handle any device creation or DirectX version errors
 	if (FAILED(hr))
@@ -228,22 +219,20 @@ void DirectXGame::OnResize()
 {
 	// Release the views, since we'll be destroying
 	// the corresponding buffers.
-	ReleaseMacro(renderTargetView);
+	ReleaseMacro(backBufferRenderTargetView[0]);
+	//ReleaseMacro(pPRenderTargetView[0]);
+	//ReleaseMacro(pPRenderTargetView[1]);
+	//ReleaseMacro(pPRenderTargetView[2]);
 	ReleaseMacro(depthStencilView);
 	ReleaseMacro(depthStencilBuffer);
 
 	// Resize the swap chain to match the window and
 	// recreate the render target view
-	HR(swapChain->ResizeBuffers(
-		1,
-		windowWidth,
-		windowHeight,
-		DXGI_FORMAT_R8G8B8A8_UNORM,
-		0));
-	ID3D11Texture2D* backBuffer;
-	HR(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer)));
-	HR(device->CreateRenderTargetView(backBuffer, 0, &renderTargetView));
-	ReleaseMacro(backBuffer);
+	HR(swapChain->ResizeBuffers(1, windowWidth, windowHeight, DXGI_FORMAT_R8G8B8A8_UNORM, 0));
+	ID3D11Texture2D* renderBuffer;
+	HR(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&renderBuffer)));
+	HR(device->CreateRenderTargetView(renderBuffer, 0, backBufferRenderTargetView));
+	ReleaseMacro(renderBuffer);
 
 	// Set up the description of the texture to use for the
 	// depth stencil buffer
@@ -277,7 +266,7 @@ void DirectXGame::OnResize()
 
 	// Bind these views to the pipeline, so rendering actually
 	// uses the underlying textures
-	deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+	//deviceContext->OMSetRenderTargets(1, renderTargetView, depthStencilView);
 
 	// Update the viewport and set it on the device
 	viewport.TopLeftX = 0;

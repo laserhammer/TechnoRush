@@ -10,7 +10,7 @@ class UiManager
 public:
 	static void InitUi(Camera* uiCamera);
 	static void Update(GameState currentState);
-	static void DrawUi(ID3D11RenderTargetView* renderTargetView, ID3D11DepthStencilView* depthStencilView, ID3D11DeviceContext* deviceContext, DirectX::XMFLOAT4X4& viewData, DirectX::XMFLOAT4X4& projectionData);
+	static void DrawUi(ID3D11RenderTargetView *const *renderTargetView, ID3D11DepthStencilView* depthStencilView, ID3D11DeviceContext* deviceContext, DirectX::XMFLOAT4X4& viewData, DirectX::XMFLOAT4X4& projectionData);
 	static void SetScore(int score);
 	static void Release();
 
