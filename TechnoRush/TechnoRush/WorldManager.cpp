@@ -3,13 +3,13 @@
 #include "ScrollingMaterial.h"
 #include <ppl.h>
 
-#define BASE_ACCEL -0.25f
-#define ACTIVE_ACCEL -0.45f
-#define ACCEL_INC -0.001f
-#define ROT_RATE 1.5707f
-#define STRAFE_RATE 1.25f
-#define DECCEL_COEFF 0.75f
-#define OBST_BOOST_COEFF 0.75f
+#define BASE_ACCEL -0.3f
+#define ACTIVE_ACCEL -0.50f
+#define ACCEL_INC -0.0005f
+#define ROT_RATE 0.2707f
+#define STRAFE_RATE 0.95f
+#define DECCEL_COEFF 0.7f
+#define OBST_BOOST_COEFF 0.45f
 
 WorldManager::WorldManager()
 {
@@ -102,11 +102,6 @@ void WorldManager::Update(float dt)
 		}
 	});
 
-	//limit max acceleration
-	//if (accel.z < -1.0f)
-	//{
-	//	accel.z = -1.0f;
-	//}
 
 	//add acceleration to velocity
 	velocity.x += accel.x;
