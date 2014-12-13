@@ -21,6 +21,12 @@ private:
 	static Atlas _titleData;
 	static GameEntity* _paused;
 	static Atlas _pausedData;
+	static std::vector<GameEntity*>* _scoreNums;
+	static std::vector<Atlas*>* _scoreData;
+	static GameEntity* _gameOver;
+	static Atlas _gameOverData;
 	static Camera* _uiCamera;
+	
+
 };
 

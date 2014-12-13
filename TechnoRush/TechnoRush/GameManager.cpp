@@ -58,13 +58,16 @@ void GameManager::LoadData(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 		(*_entities)[i] = new GameEntity(AssetLoader::obstacleMat, AssetLoader::cube, &AssetLoader::vsData);
 		(*_entities)[i + 1] = new GameEntity(AssetLoader::obstacleTowerMat, AssetLoader::tower, &AssetLoader::vsData);
 	}
-	_worldManager->getEntities(_entities);
+	
 
-	_entities->resize(numObstacles + 3);
+	_entities->resize(numObstacles + 1);
 	//player
 	(*_entities)[numObstacles] = new GameEntity(AssetLoader::playerMat, AssetLoader::player, &AssetLoader::vsData);
 	(*_entities)[numObstacles]->position(XMFLOAT4(0.0f, 0.0f, -3.0f, 0.0f));
 
+	_worldManager->getEntities(_entities);
+
+	_entities->resize(numObstacles + 3);
 	//Floor
 	(*_entities)[numObstacles + 1] = new GameEntity(AssetLoader::floorMat, AssetLoader::floor, &AssetLoader::vsData);
 	(*_entities)[numObstacles + 1]->scale(XMFLOAT4(100.0f, 1.0f, 100.0f, 0.0f));
@@ -96,7 +99,7 @@ void GameManager::Update(float dt)
 		_worldManager->Update(dt);
 		color = GetColorFromSpeed(speed - 0.04f);
 		_gameCamera->Resize(_gameCamera->aspectRatio(), _fov);
-		_score += speed;
+		_score += speed*100;
 		for each (GameEntity* entity in *_entities)
 		{
 			entity->color(color);
@@ -179,6 +182,8 @@ void GameManager::UpdateFSM()
 			break;
 		case EndGame:
 			ChangeGamestate(GameState::Menu);
+			_worldManager->setCollide(false);
+			_worldManager->resetWorld();
 			break;
 		default:
 			break;
@@ -202,9 +207,8 @@ void GameManager::UpdateFSM()
 
 	if (_currentGameState == GameState::Play && _worldManager->getCollide())
 	{
-		ChangeGamestate(GameState::Menu);
-		_worldManager->setCollide(false);
-		_worldManager->resetWorld();
+		ChangeGamestate(GameState::EndGame);
+		
 	}
 }
 

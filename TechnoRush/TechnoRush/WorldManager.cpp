@@ -6,6 +6,7 @@
 WorldManager::WorldManager()
 {
 	entities = std::vector <GameEntity*>() ;
+	playerRot = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 	velocity = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 	slowVel = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 	accel = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -32,14 +33,36 @@ WorldManager::~WorldManager()
 
 void WorldManager::Update(float dt)
 {
+	playerRot = entities.at(entities.size() - 1)->rotation();
 	//use input to set acceleration
+
+	//rotate player model if they are moving left or right
 	if (InputManager::rArrowKey)
 	{
 		accel.x += -0.12f*dt;
+		if (playerRot.z > -0.2)
+			playerRot.z -= 0.5*dt;
 	}
 	else if (InputManager::lArrowKey)
 	{
 		accel.x += 0.12f*dt;
+		if (playerRot.z < 0.2)
+			playerRot.z += 0.5*dt;
+	}
+	else
+	{
+		if (playerRot.z <= 0.01 && playerRot.z >= -0.01)
+		{
+			playerRot.z = 0;
+		}
+		else if (playerRot.z > 0)
+		{
+			playerRot.z -= 0.5*dt;
+		}
+		else if (playerRot.z < 0)
+		{
+			playerRot.z += 0.5*dt;
+		}
 	}
 	
 	accel.z += -0.08f*dt;
@@ -54,7 +77,7 @@ void WorldManager::Update(float dt)
 	}
 
 	//give the player a speed boost if they are flying close to the obstacles
-	unsigned int size = entities.size();
+	unsigned int size = entities.size()-1;
 	for (unsigned int i = 0; i < size; i++)
 	{
 		if (entities[i]->position().z - 1.25f < 2.0f && entities[i]->position().z + 1.25f > -2.0f)
@@ -113,19 +136,13 @@ void WorldManager::Update(float dt)
 	accel.x = 0;
 
 	checkCollision();
-
-	//Scroll the floor
-	//float scrollWrap = 50.0f;
-	//float velocityScale = 1.0f;
-	//_scroll = XMFLOAT2(modff(velocity.x * dt * velocityScale + _scroll.x, &scrollWrap), modff(velocity.z * dt * velocityScale + _scroll.y, &scrollWrap));
-
-	//((ScrollingMaterial*)(_floor->mat()))->SetScroll(_scroll);
+	entities.at(entities.size() - 1)->rotation(playerRot);
 }
 
 void WorldManager::getEntities(std::vector<GameEntity*>* _entities)
 {
 	entities = *_entities;
-	unsigned int size = entities.size();
+	unsigned int size = entities.size()-1;
 	for (unsigned int i = 0; i < size; i++)
 	{
 		worldChunks[i % 9]->Obst.push_back(entities[i]);
@@ -140,13 +157,14 @@ void WorldManager::getEntities(std::vector<GameEntity*>* _entities)
 void WorldManager::checkCollision()
 {
 	//check to see if any obstacle has collided with the player
-	unsigned int size = entities.size();
+	unsigned int size = entities.size()-1;
 	for (unsigned int i = 0; i < size; i++)
 	{
 		if (entities[i]->position().z - 1.25f < -1.75f && entities[i]->position().z + 1.25f > -2.0f)
 		{
 			if (entities[i]->position().x - 0.9f < 0.5f && entities[i]->position().x + 0.9f > -0.5f)
 			{
+				
 				collide = true;
 			}
 		}
@@ -158,6 +176,9 @@ void WorldManager::resetWorld()
 {
 	velocity.x = 0;
 	velocity.z = 0;
+
+	playerRot.z = 0;
+	entities.at(entities.size() - 1)->rotation(playerRot);
 
 	worldChunks[0]->setPosition(XMFLOAT4(0.0f, 0.0f, 40.0f, 1.0f));
 	worldChunks[1]->setPosition(XMFLOAT4(40.0f, 0.0f, 40.0f, 1.0f));

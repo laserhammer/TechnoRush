@@ -6,6 +6,7 @@
 #include <cstring>
 #include <ctime>
 #include "WICTextureLoader.h"
+#include <DDSTextureLoader.h>
 #include "DirectXGame.h"
 #include <d3dcompiler.h>
 
@@ -124,8 +125,8 @@ void AssetLoader::LoadAssets(ID3D11Device* device, ID3D11DeviceContext* deviceCo
 	in_Stream.close();
 
 	D3D11_SAMPLER_DESC desc;
+	desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	//desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-	desc.Filter = D3D11_FILTER_ANISOTROPIC;
 	desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -133,19 +134,19 @@ void AssetLoader::LoadAssets(ID3D11Device* device, ID3D11DeviceContext* deviceCo
 	desc.BorderColor[1] = 0;
 	desc.BorderColor[2] = 0;
 	desc.BorderColor[3] = 0;
-	desc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 	desc.MaxAnisotropy = 8;
-	desc.MaxLOD = 0;
+	desc.MaxLOD = FLT_MAX;
 	desc.MinLOD = 0;
-	desc.MipLODBias = 0;
+	desc.MipLODBias = -2;
 
 	device->CreateSamplerState(&desc, &samplerState);
 
 	CreateWICTextureFromFile(device, deviceContext, L"../Resources/Textures/playerTexture.png", 0, &playerTex);
 	CreateWICTextureFromFile(device, deviceContext, L"../Resources/Textures/FloorTex.png", 0, &floorTex);
 	CreateWICTextureFromFile(device, deviceContext, L"../Resources/Textures/TileNormal.png", 0, &floorNormMap);
-	CreateWICTextureFromFile(device, deviceContext, L"../Resources/Textures/CubeTexture.png", 0, &obstacleTex);
-	CreateWICTextureFromFile(device, deviceContext, L"../Resources/Textures/TowerTexture.png", 0, &obstacleTowerTex);
+	CreateDDSTextureFromFile(device, deviceContext, L"../Resources/Textures/CubeTexture.dds", 0, &obstacleTex);
+	CreateDDSTextureFromFile(device, deviceContext, L"../Resources/Textures/TowerTexture.dds", 0, &obstacleTowerTex);
 	CreateWICTextureFromFile(device, deviceContext, L"../Resources/Textures/Black.png", 0, &black);
 	CreateWICTextureFromFile(device, deviceContext, L"../Resources/Textures/UIText.png", 0, &uiTex);
 	CreateWICTextureFromFile(device, deviceContext, L"../Resources/Textures/Background.png", 0, &backgroundTex);
