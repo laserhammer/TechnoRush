@@ -13,7 +13,7 @@
 #include "UiManager.h"
 
 #define NUMB_OBSTACLES 46
-#define FOV_WARP 0.0005f
+#define FOV_WARP 0.00075f
 
 GameManager::GameManager()
 {

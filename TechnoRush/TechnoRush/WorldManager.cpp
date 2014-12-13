@@ -3,13 +3,14 @@
 #include "ScrollingMaterial.h"
 #include <ppl.h>
 
-#define BASE_ACCEL -0.3f
+#define BASE_ACCEL -0.25f
 #define ACTIVE_ACCEL -0.50f
 #define ACCEL_INC -0.0005f
 #define ROT_RATE 0.2707f
 #define STRAFE_RATE 0.95f
 #define DECCEL_COEFF 0.7f
 #define OBST_BOOST_COEFF 0.45f
+#define FWD_FRIC_COEFF 1.25f
 
 WorldManager::WorldManager()
 {
@@ -142,7 +143,7 @@ void WorldManager::Update(float dt)
 	
 	//reset acceleration
 	//apply friction
-	velocity.z *= 1.0f - (1.5f * dt);
+	velocity.z *= 1.0f - (FWD_FRIC_COEFF * dt);
 	//velocity.z -= displacement.z * 10.0f;
 	velocity.x *= 1.0f - (3.5f * dt);
 	//velocity.x -= displacement.x;
