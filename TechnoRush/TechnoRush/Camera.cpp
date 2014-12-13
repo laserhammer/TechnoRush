@@ -4,6 +4,7 @@
 #include "AssetLoader.h"
 #include "HDRMaterial.h"
 
+#define RADIAL_BLUR_COEFF 3750.0f
 
 using namespace DirectX;
 Camera::Camera(void)
@@ -173,7 +174,7 @@ void Camera::RenderScene(GameEntity** entities, UINT numEntities, ID3D11RenderTa
 		
 		//Now for the radial blur
 		float relativeFOV = abs(_fieldOfView - 1.57079632679f);
-		((HDRMaterial*)_pPQuad2->mat())->SetRadialBlur(12500.0f * relativeFOV * relativeFOV);
+		((HDRMaterial*)_pPQuad2->mat())->SetRadialBlur(RADIAL_BLUR_COEFF * relativeFOV * relativeFOV);
 		((HDRMaterial*)_pPQuad2->mat())->UpdateBuffer();
 
 		deviceContext->OMSetRenderTargets(numViews, renderTargetView, NULL);

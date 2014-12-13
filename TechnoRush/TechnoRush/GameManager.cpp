@@ -12,7 +12,8 @@
 #include "AssetLoader.h"
 #include "UiManager.h"
 
-
+#define NUMB_OBSTACLES 46
+#define FOV_WARP 0.0005f
 
 GameManager::GameManager()
 {
@@ -51,7 +52,7 @@ void GameManager::LoadData(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 
 	_entities = new std::vector<GameEntity*>();
 
-	int numObstacles = 46;
+	int numObstacles = NUMB_OBSTACLES;
 	_entities->resize(numObstacles);
 	for (int i = 0; i < numObstacles; i+=2)
 	{
@@ -92,14 +93,15 @@ void GameManager::Update(float dt)
 	UpdateFSM();
 	XMFLOAT4 color;
 	float speed = abs(_worldManager->getSpeed());
-	_fov = DEFAULT_FOV - speed * 0.1f;
+	_fov = DEFAULT_FOV - speed * FOV_WARP;
 	switch (_currentGameState)
 	{
 	case GameState::Play:
 		_worldManager->Update(dt);
-		color = GetColorFromSpeed(speed - 0.04f);
+		color = GetColorFromSpeed(speed - 10.0f);
 		_gameCamera->Resize(_gameCamera->aspectRatio(), _fov);
-		_score += speed*100;
+		//_score += speed*100;
+		_score = speed * 1000;
 		for each (GameEntity* entity in *_entities)
 		{
 			entity->color(color);
@@ -279,19 +281,19 @@ XMFLOAT4 GameManager::GetColorFromSpeed(float speed)
 
 	if (speed < 0)
 	{
-		r = 0.412f - (speed / -0.04f) * (1.0f);
+		r = 0.412f - (speed / -4.5f) * (1.0f);
 		r = r <= 0.0f ? 0.0f : r;
 		g = 0.0f;
-		b = 0.043f - (speed / -0.04f) * (1.0f);
+		b = 0.043f - (speed / -4.5f) * (1.0f);
 		b = b <= 0.0f ? 0.0f : b;
 	}
 	else
 	{
-		r = 0.412f + (speed / 0.11f) * (.196f - 0.412f);
+		r = 0.412f + (speed / 10.0f) * (.196f - 0.412f);
 		r = r >= 1.0f ? 1.0f : r;
-		g = 0.0f + (speed / 0.11f) * (0.807f - 0.0f);
+		g = 0.0f + (speed / 10.0f) * (0.807f - 0.0f);
 		g = g >= 1.0f ? 1.0f : g;
-		b = 0.043f + (speed / 0.11f) * (1.0f - 0.043f);
+		b = 0.043f + (speed / 10.0f) * (1.0f - 0.043f);
 		b = b >= 1.0f ? 1.0f : b;
 	}
 	return XMFLOAT4(r, g, b, 1.0f);

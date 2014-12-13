@@ -93,7 +93,7 @@ void UiManager::Update(GameState currentState)
 		{
 			_scoreNums->at(i)->layer(2);
 		}
-		_scoreBack->layer(0);
+		_scoreBack->layer(2);
 		_title->layer(0);
 		_paused->layer(0);
 		_gameOver->layer(2);

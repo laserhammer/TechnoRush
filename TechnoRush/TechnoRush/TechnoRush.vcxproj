@@ -55,6 +55,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <Profile>true</Profile>
     </Link>
     <FxCompile>
       <ShaderModel>4.0_level_9_3</ShaderModel>

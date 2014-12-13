@@ -37,5 +37,6 @@ private:
 	XMFLOAT2 _scroll;
 	GameEntity* _floor;
 
+	float _totalTime;
 };
 

@@ -309,9 +309,17 @@ int DirectXGame::Run()
 			}
 			else
 			{
+				//Wait for vertical sync
+				float dt = 0.0f;
+				do
+				{
+					dt += timer.DeltaTime();
+					timer.Reset();
+					Sleep(1);
+				} while (dt < 0.016f);
 				// Standard game loop type stuff
 				CalculateFrameStats();
-				UpdateScene(timer.DeltaTime());
+				UpdateScene(dt);
 				DrawScene();
 			}
 		}
