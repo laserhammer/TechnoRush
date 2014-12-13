@@ -159,9 +159,17 @@ void UiManager::Release()
 	delete _title;
 	delete _paused;
 	delete _gameOver;
+	while (_scoreData->size() > 0)
+	{
+		Atlas* scoreDatum = (*_scoreData)[_scoreData->size() - 1];
+		delete(scoreDatum);
+		_scoreData->pop_back();
+		GameEntity* scoreNum = (*_scoreNums)[_scoreNums->size() - 1];
+		delete(scoreNum);
+		_scoreNums->pop_back();
+	}
 	delete _scoreData;
 	delete _scoreNums;
-	
 }
 
 int UiManager::_score = 0;
