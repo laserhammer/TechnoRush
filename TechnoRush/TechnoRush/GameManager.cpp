@@ -187,6 +187,9 @@ void GameManager::UpdateFSM()
 			_worldManager->setCollide(false);
 			_worldManager->resetWorld();
 			break;
+		case Pause:
+			ChangeGamestate(GameState::Play);
+			break;
 		default:
 			break;
 		}
