@@ -4,7 +4,7 @@
 #include "AssetLoader.h"
 #include "HDRMaterial.h"
 
-#define RADIAL_BLUR_COEFF 3750.0f
+#define RADIAL_BLUR_COEFF 1000.0f
 
 using namespace DirectX;
 Camera::Camera(void)
@@ -50,16 +50,30 @@ Camera::~Camera(void)
 
 void Camera::InitPostProcRenderTarget(ID3D11Device* device)
 {
+	XMFLOAT4 pos = this->forward();
+	pos.y += 0.95f;
 	_pPQuad0 = new GameEntity(AssetLoader::hDRMat0, AssetLoader::quad, &AssetLoader::vsData);
-	SetFullScreen(_pPQuad0, _far * 0.95f);
+	//SetFullScreen(_pPQuad0, _far * 0.95f);
+	//_pPQuad0->Update(1.0f);
+	_pPQuad0->position(pos);
+	_pPQuad0->rotation(this->RotateToCamera(XMFLOAT4(0.0f, 1.0f, 0.0f, 0.f)));
+	_pPQuad0->scale(XMFLOAT4(_width, _width / _aspectRatio, 1.0f, 0.0f));
 	_pPQuad0->Update(1.0f);
 
 	_pPQuad1 = new GameEntity(AssetLoader::hDRMat1, AssetLoader::quad, &AssetLoader::vsData);
-	SetFullScreen(_pPQuad1, _far * 0.95f);
+	//SetFullScreen(_pPQuad1, _far * 0.95f);
+	//_pPQuad1->Update(1.0f);
+	_pPQuad1->position(pos);
+	_pPQuad1->rotation(this->RotateToCamera(XMFLOAT4(0.0f, 1.0f, 0.0f, 0.f)));
+	_pPQuad1->scale(XMFLOAT4(_width, _width / _aspectRatio, 1.0f, 0.0f));
 	_pPQuad1->Update(1.0f);
 
 	_pPQuad2 = new GameEntity(AssetLoader::hDRMat2, AssetLoader::quad, &AssetLoader::vsData);
-	SetFullScreen(_pPQuad2, _far * 0.95f);
+	//SetFullScreen(_pPQuad2, _far * 0.95f);
+	//_pPQuad2->Update(1.0f);
+	_pPQuad2->position(pos);
+	_pPQuad2->rotation(this->RotateToCamera(XMFLOAT4(0.0f, 1.0f, 0.0f, 0.f)));
+	_pPQuad2->scale(XMFLOAT4(_width, _width / _aspectRatio, 1.0f, 0.0f));
 	_pPQuad2->Update(1.0f);
 
 	D3D11_RENDER_TARGET_VIEW_DESC renderTargetDesc;
@@ -142,7 +156,8 @@ void Camera::RenderScene(GameEntity** entities, UINT numEntities, ID3D11RenderTa
 	}
 	if (_hdr)
 	{
-		
+		XMStoreFloat4x4(&projectionData, XMMatrixTranspose(XMMatrixOrthographicLH(_width, _width / _aspectRatio, _near, _far)));
+
 		((HDRMaterial*)_pPQuad2->mat())->SetStage(FILTER);
 		((HDRMaterial*)_pPQuad2->mat())->UpdateBuffer();
 

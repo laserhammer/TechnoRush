@@ -3,11 +3,11 @@
 #include "ScrollingMaterial.h"
 #include <ppl.h>
 
-#define BASE_ACCEL -0.25f
-#define ACTIVE_ACCEL -0.50f
+#define BASE_ACCEL -1.00f
+#define ACTIVE_ACCEL -1.50f
 #define ACCEL_INC -0.0005f
-#define ROT_RATE 0.2707f
-#define STRAFE_RATE 0.95f
+#define ROT_RATE 2.0f
+#define STRAFE_RATE 2.0f
 #define DECCEL_COEFF 0.7f
 #define OBST_BOOST_COEFF 0.45f
 #define FWD_FRIC_COEFF 1.25f
@@ -188,6 +188,7 @@ void WorldManager::checkCollision()
 //return worldchunks to their starting positions and randomize obstacle locations
 void WorldManager::resetWorld()
 {
+	_totalTime = 0.0f;
 	velocity.x = 0;
 	velocity.z = 0;
 

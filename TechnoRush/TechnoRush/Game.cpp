@@ -95,7 +95,7 @@ void Game::DrawScene()
 {
 	gameManager->RenderScene(backBufferRenderTargetView, depthStencilView, deviceContext);
 	// Present the buffer
-	HR(swapChain->Present(0, 0));
+	HR(swapChain->Present(1, 0));
 }
 
 #pragma endregion

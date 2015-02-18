@@ -98,7 +98,7 @@ void GameManager::Update(float dt)
 	{
 	case GameState::Play:
 		_worldManager->Update(dt);
-		color = GetColorFromSpeed(speed - 10.0f);
+		color = GetColorFromSpeed(speed - 33.0f);
 		_gameCamera->Resize(_gameCamera->aspectRatio(), _fov);
 		//_score += speed*100;
 		_score = speed * 1000;
@@ -289,11 +289,11 @@ XMFLOAT4 GameManager::GetColorFromSpeed(float speed)
 	}
 	else
 	{
-		r = 0.412f + (speed / 10.0f) * (.196f - 0.412f);
+		r = 0.412f + (speed / 40.0f) * (.196f - 0.412f);
 		r = r >= 1.0f ? 1.0f : r;
-		g = 0.0f + (speed / 10.0f) * (0.807f - 0.0f);
+		g = 0.0f + (speed / 40.0f) * (0.807f - 0.0f);
 		g = g >= 1.0f ? 1.0f : g;
-		b = 0.043f + (speed / 10.0f) * (1.0f - 0.043f);
+		b = 0.043f + (speed / 40.0f) * (1.0f - 0.043f);
 		b = b >= 1.0f ? 1.0f : b;
 	}
 	return XMFLOAT4(r, g, b, 1.0f);

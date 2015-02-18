@@ -23,8 +23,8 @@ float4 main(VertexToPixel input) : SV_TARGET
 	
 	if (stage == 0)
 	{
-		texCoord.x = ((texCoord.x - 0.5f) * 1.2125f) + 0.5f;
-		texCoord.y = ((texCoord.y - 0.5f) * 1.2125f) + 0.5f;
+		//texCoord.x = ((texCoord.x - 0.5f) * 1.2125f) + 0.5f;
+		//texCoord.y = ((texCoord.y - 0.5f) * 1.2125f) + 0.5f;
 		float4 output = myTexture.Sample(TrilinearSampler, texCoord);
 		bool filter = (output.r + output.g + output.b) / 3.0f > 0.50;
 		if (filter)
